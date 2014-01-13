@@ -1,0 +1,59 @@
+description = 'Spring OGC SOS'
+
+buildscript {
+	repositories {
+		maven { url 'https://repo.springsource.org/plugins-snapshot' }
+	}
+	dependencies {
+		classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.2.8'
+	}
+}
+
+apply plugin: 'java'
+apply from:   "${rootProject.projectDir}/publish-maven.gradle"
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+group = 'de.i3mainz.springframework.ogc.swe'
+
+repositories {
+	maven { url 'http://mvnrepo.geoinform.fh-mainz.de/artifactory/remote-repos/' }
+	mavenLocal()
+}
+
+sourceCompatibility=1.6
+targetCompatibility=1.6
+
+ext {
+	junitVersion = '4.11'
+	log4jVersion = '1.2.17'
+	mockitoVersion = '1.9.5'
+	springVersion = '4.0.0.RELEASE'
+	oxfVersion = '2.0.0-alpha.4-SNAPSHOT'
+	n52SOSImporterVersion = '0.4.0-SNAPSHOT'
+}
+
+eclipse {
+	project {
+		natures += 'org.springframework.ide.eclipse.core.springnature'
+	}
+}
+
+sourceSets {
+	test {
+		resources {
+			srcDirs = ['src/test/resources', 'src/test/java']
+		}
+	}
+}
+
+dependencies {
+	compile project(":spring:data:spring-ogc:spring-ogc-core")
+	compile "org.n52.sensorweb:oxf-sos-adapter:$oxfVersion"
+	compile "org.n52.sensorweb:52n-sos-importer-bindings:$n52SOSImporterVersion"
+	compile "org.n52.sensorweb:52n-sos-importer-feeder:$n52SOSImporterVersion"
+
+	testCompile "junit:junit-dep:$junitVersion"
+	testCompile "log4j:log4j:$log4jVersion"
+	testCompile "org.springframework:spring-test:$springVersion"
+}
