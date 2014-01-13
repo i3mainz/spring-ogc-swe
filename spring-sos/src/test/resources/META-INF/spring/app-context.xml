@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<description>Example configuration to get you started.</description>
+
+	<bean class="de.i3mainz.springframework.swe.n52.sos.core.SOSTemplate"
+		id="sos">
+		<property name="connectionParameter" ref="connectionParameterSOS" />
+	</bean>
+
+	<context:component-scan base-package="de.i3mainz.springframework.swe" />
+
+	<bean id="connectionParameterSOS"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="http://10.153.101.11:8180/52nSOSv3.5.0/sos"
+			name="url">
+		</property>
+		<property name="version" value="1.0.0"></property>
+		<property name="binding" value="SOAP"></property>
+	</bean>
+
+	<bean id="testsensor" class="de.i3mainz.springframework.swe.n52.sos.model.Sensor">
+		<constructor-arg name="id" value="Test1000" />
+		<constructor-arg name="offeringId" value="Twitter_Sentiment" />
+		<constructor-arg name="offeringName" value="Twitter Sentiment Analyse" />
+	</bean>
+
+	<bean id="testFOI"
+		class="de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest">
+		<constructor-arg name="id" value="foi_Mainz_1"></constructor-arg>
+		<constructor-arg name="name" value="Mainz 1"></constructor-arg>
+		<constructor-arg name="position" value="49.99984232 8.23548545"></constructor-arg>
+	</bean>
+
+	<bean id="dateFormat" class="java.text.SimpleDateFormat">
+		<constructor-arg value="yyyy-MM-dd'T'HH:mm:ssX" />
+	</bean>
+
+	<bean id="testobservation"
+		class="de.i3mainz.springframework.swe.n52.sos.model.Observation">
+		<constructor-arg name="time">
+<!-- 			<bean factory-bean="dateFormat" factory-method="parse"> -->
+<!-- 				<constructor-arg> -->
+					<bean class="java.util.Date" />
+<!-- 				</constructor-arg> -->
+<!-- 			</bean> -->
+		</constructor-arg>
+		<constructor-arg name="value" value="TESTOBSERVATION0815" />
+	</bean>
+
+</beans>
