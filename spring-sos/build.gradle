@@ -24,14 +24,14 @@ repositories {
 sourceCompatibility=1.6
 targetCompatibility=1.6
 
-ext {
+/*ext {
 	junitVersion = '4.11'
 	log4jVersion = '1.2.17'
 	mockitoVersion = '1.9.5'
 	springVersion = '4.0.0.RELEASE'
 	oxfVersion = '2.0.0-alpha.4-SNAPSHOT'
 	n52SOSImporterVersion = '0.4.0-SNAPSHOT'
-}
+}*/
 
 eclipse {
 	project {
