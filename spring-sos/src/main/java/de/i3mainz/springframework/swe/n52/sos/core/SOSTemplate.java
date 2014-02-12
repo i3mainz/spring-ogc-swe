@@ -1,30 +1,10 @@
 package de.i3mainz.springframework.swe.n52.sos.core;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
-import net.opengis.sos.x10.InsertObservationResponseDocument;
-import net.opengis.sos.x10.InsertObservationResponseDocument.InsertObservationResponse;
-import net.opengis.sos.x10.RegisterSensorResponseDocument;
-import net.opengis.swes.x20.InsertSensorResponseDocument;
-
-import org.apache.xmlbeans.XmlException;
-import org.n52.oxf.OXFException;
-import org.n52.oxf.adapter.OperationResult;
-import org.n52.oxf.ows.ExceptionReport;
-import org.n52.oxf.ows.OWSException;
-import org.n52.oxf.ows.OwsExceptionCode;
 import org.n52.oxf.ows.ServiceDescriptor;
 import org.n52.oxf.ows.capabilities.OperationsMetadata;
-import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
 import org.n52.oxf.sos.adapter.SOSAdapter;
-import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
-import org.n52.oxf.sos.request.v200.InsertSensorParameters;
-import org.n52.sos.importer.feeder.Configuration;
-import org.n52.sos.importer.feeder.model.requests.InsertObservation;
-import org.n52.sos.importer.feeder.model.requests.RegisterSensor;
 
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
@@ -124,101 +104,101 @@ public class SOSTemplate extends SOSAccessor implements
 		return responserequest;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.i3mainz.springframework.ows.n52.sos.core.
-	 * SensorObservationServiceOperations
-	 * #registerSensor(org.n52.sos.importer.feeder
-	 * .model.requests.RegisterSensor)
-	 */
-	@Override
-	public String registerSensor(final RegisterSensor rs) {
-		try {
-			if (getConnectionParameter().getVersion().equals("1.0.0")) {
-				LOG.trace("registerSensor()");
-				final RegisterSensorParameters regSensorParameter = createRegisterSensorParametersFromRS(rs);
-				final OperationResult opResult = getSosWrapper()
-						.doRegisterSensor(regSensorParameter);
-				final RegisterSensorResponseDocument response = RegisterSensorResponseDocument.Factory
-						.parse(opResult.getIncomingResultAsStream());
-				LOG.debug("RegisterSensorResponse parsed");
-				return response.getRegisterSensorResponse()
-						.getAssignedSensorId();
-			} else if (getConnectionParameter().getVersion().equals("2.0.0")) {
-				LOG.trace("insertSensor()");
-				final InsertSensorParameters insSensorParams = createInsertSensorParametersFromRS(rs);
-				if (getSosBinding() != null) {
-					insSensorParams.addParameterValue(
-							ISOSRequestBuilder.BINDING, getSosBinding().name());
-				}
-				final OperationResult opResult = getSosWrapper()
-						.doInsertSensor(insSensorParams);
-				final InsertSensorResponseDocument response = InsertSensorResponseDocument.Factory
-						.parse(opResult.getIncomingResultAsStream());
-				LOG.debug("InsertSensorResponse parsed");
-				getOfferings().put(
-						response.getInsertSensorResponse()
-								.getAssignedProcedure(),
-						response.getInsertSensorResponse()
-								.getAssignedOffering());
-				return response.getInsertSensorResponse()
-						.getAssignedProcedure();
-			}
-		} catch (final ExceptionReport e) {
-			// Handle already registered sensor case here (happens when the
-			// sensor is registered but not listed in the capabilities):
-			final Iterator<OWSException> iter = e.getExceptionsIterator();
-			while (iter.hasNext()) {
-				final OWSException owsEx = iter.next();
-				if (owsEx.getExceptionCode().equals(
-						OwsExceptionCode.NoApplicableCode.name())
-						&& owsEx.getExceptionTexts() != null
-						&& owsEx.getExceptionTexts().length > 0) {
-					for (final String string : owsEx.getExceptionTexts()) {
-						if (string
-								.indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_START) > -1
-								&& string
-										.indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-							return rs.getSensorURI();
-						}
-					}
-				}
-				// handle offering already contained case here
-				else if (owsEx.getExceptionCode().equals(
-						OwsExceptionCode.InvalidParameterValue.name())
-						&& owsEx.getLocator().equals("offeringIdentifier")
-						&& owsEx.getExceptionTexts() != null
-						&& owsEx.getExceptionTexts().length > 0) {
-					for (final String string : owsEx.getExceptionTexts()) {
-						if (string
-								.indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
-								&& string
-										.indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-							getOfferings().put(rs.getSensorURI(),
-									rs.getOfferingUri());
-							return rs.getSensorURI();
-						}
-					}
-				}
-
-			}
-			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-		} catch (final OXFException e) {
-			// TODO Auto-generated catch block generated on 21.06.2012 around
-			// 14:53:40
-			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-		} catch (final XmlException e) {
-			// TODO Auto-generated catch block generated on 21.06.2012 around
-			// 14:53:54
-			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-		} catch (final IOException e) {
-			// TODO Auto-generated catch block generated on 21.06.2012 around
-			// 14:53:54
-			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-		}
-		return null;
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see de.i3mainz.springframework.ows.n52.sos.core.
+//	 * SensorObservationServiceOperations
+//	 * #registerSensor(org.n52.sos.importer.feeder
+//	 * .model.requests.RegisterSensor)
+//	 */
+//	@Override
+//	public String registerSensor(final RegisterSensor rs) {
+//		try {
+//			if (getConnectionParameter().getVersion().equals("1.0.0")) {
+//				LOG.trace("registerSensor()");
+//				final RegisterSensorParameters regSensorParameter = createRegisterSensorParametersFromRS(rs);
+//				final OperationResult opResult = getSosWrapper()
+//						.doRegisterSensor(regSensorParameter);
+//				final RegisterSensorResponseDocument response = RegisterSensorResponseDocument.Factory
+//						.parse(opResult.getIncomingResultAsStream());
+//				LOG.debug("RegisterSensorResponse parsed");
+//				return response.getRegisterSensorResponse()
+//						.getAssignedSensorId();
+//			} else if (getConnectionParameter().getVersion().equals("2.0.0")) {
+//				LOG.trace("insertSensor()");
+//				final InsertSensorParameters insSensorParams = createInsertSensorParametersFromRS(rs);
+//				if (getSosBinding() != null) {
+//					insSensorParams.addParameterValue(
+//							ISOSRequestBuilder.BINDING, getSosBinding().name());
+//				}
+//				final OperationResult opResult = getSosWrapper()
+//						.doInsertSensor(insSensorParams);
+//				final InsertSensorResponseDocument response = InsertSensorResponseDocument.Factory
+//						.parse(opResult.getIncomingResultAsStream());
+//				LOG.debug("InsertSensorResponse parsed");
+//				getOfferings().put(
+//						response.getInsertSensorResponse()
+//								.getAssignedProcedure(),
+//						response.getInsertSensorResponse()
+//								.getAssignedOffering());
+//				return response.getInsertSensorResponse()
+//						.getAssignedProcedure();
+//			}
+//		} catch (final ExceptionReport e) {
+//			// Handle already registered sensor case here (happens when the
+//			// sensor is registered but not listed in the capabilities):
+//			final Iterator<OWSException> iter = e.getExceptionsIterator();
+//			while (iter.hasNext()) {
+//				final OWSException owsEx = iter.next();
+//				if (owsEx.getExceptionCode().equals(
+//						OwsExceptionCode.NoApplicableCode.name())
+//						&& owsEx.getExceptionTexts() != null
+//						&& owsEx.getExceptionTexts().length > 0) {
+//					for (final String string : owsEx.getExceptionTexts()) {
+//						if (string
+//								.indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_START) > -1
+//								&& string
+//										.indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_END) > -1) {
+//							return rs.getSensorURI();
+//						}
+//					}
+//				}
+//				// handle offering already contained case here
+//				else if (owsEx.getExceptionCode().equals(
+//						OwsExceptionCode.InvalidParameterValue.name())
+//						&& owsEx.getLocator().equals("offeringIdentifier")
+//						&& owsEx.getExceptionTexts() != null
+//						&& owsEx.getExceptionTexts().length > 0) {
+//					for (final String string : owsEx.getExceptionTexts()) {
+//						if (string
+//								.indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
+//								&& string
+//										.indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
+//							getOfferings().put(rs.getSensorURI(),
+//									rs.getOfferingUri());
+//							return rs.getSensorURI();
+//						}
+//					}
+//				}
+//
+//			}
+//			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+//		} catch (final OXFException e) {
+//			// TODO Auto-generated catch block generated on 21.06.2012 around
+//			// 14:53:40
+//			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+//		} catch (final XmlException e) {
+//			// TODO Auto-generated catch block generated on 21.06.2012 around
+//			// 14:53:54
+//			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+//		} catch (final IOException e) {
+//			// TODO Auto-generated catch block generated on 21.06.2012 around
+//			// 14:53:54
+//			LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+//		}
+//		return null;
+//	}
 
 	@Override
 	public String insertObservation(String sensorId, FeatureOfInterest foi, Observation observation) {
@@ -237,95 +217,95 @@ public class SOSTemplate extends SOSAccessor implements
 
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see de.i3mainz.springframework.ows.n52.sos.core.
-	 * SensorObservationServiceOperations
-	 * #insertObservation(org.n52.sos.importer.
-	 * feeder.model.requests.InsertObservation)
-	 */
-	@Override
-	public String insertObservation(final InsertObservation io)
-			throws IOException {
-		LOG.trace("insertObservation()");
-		OperationResult opResult = null;
-		org.n52.oxf.sos.request.InsertObservationParameters parameters = null;
-
-		try {
-			parameters = createParameterAssemblyFromIO(io);
-			try {
-				LOG.debug("\n\nBEFORE OXF - doOperation \"InsertObservation\"\n\n");
-				opResult = getSosWrapper().doInsertObservation(parameters);
-				LOG.debug("\n\nAFTER OXF - doOperation \"InsertObservation\"\n\n");
-				if (getConnectionParameter().getVersion().equals("1.0.0")) {
-					try {
-						final InsertObservationResponse response = InsertObservationResponseDocument.Factory
-								.parse(opResult.getIncomingResultAsStream())
-								.getInsertObservationResponse();
-						LOG.debug(String
-								.format("Observation inserted succesfully. Returned id: %s",
-										response.getAssignedObservationId()));
-						return response.getAssignedObservationId();
-					} catch (final XmlException e) {
-						// TODO Auto-generated catch block generated on
-						// 20.06.2012 around 10:43:01
-						LOG.error(
-								String.format("Exception thrown: %s",
-										e.getMessage()), e);
-					} catch (final IOException e) {
-						// TODO Auto-generated catch block generated on
-						// 20.06.2012 around 10:43:01
-						LOG.error(
-								String.format("Exception thrown: %s",
-										e.getMessage()), e);
-					}
-				} else if (getConnectionParameter().getVersion()
-						.equals("2.0.0")) {
-					try {
-						net.opengis.sos.x20.InsertObservationResponseDocument.Factory
-								.parse(opResult.getIncomingResultAsStream())
-								.getInsertObservationResponse();
-						LOG.debug("Observation inserted successfully.");
-						return "SOS 2.0 InsertObservation doesn't return the assigned id";
-					} catch (final XmlException e) {
-						LOG.error("Exception thrown: {}", e.getMessage(), e);
-					}
-				}
-			} catch (final ExceptionReport e) {
-				final Iterator<OWSException> iter = e.getExceptionsIterator();
-				StringBuffer buf = new StringBuffer();
-				while (iter.hasNext()) {
-					final OWSException owsEx = iter.next();
-					// check for observation already contained exception
-					if (owsEx
-							.getExceptionCode()
-							.equals(Configuration.SOS_EXCEPTION_CODE_NO_APPLICABLE_CODE)
-							&& owsEx.getExceptionTexts().length > 0
-							&& (owsEx.getExceptionTexts()[0]
-									.indexOf(Configuration.SOS_EXCEPTION_OBSERVATION_DUPLICATE_CONSTRAINT) > -1
-									|| owsEx.getExceptionTexts()[0]
-											.indexOf(Configuration.SOS_EXCEPTION_OBSERVATION_ALREADY_CONTAINED) > -1 || owsEx
-									.getExceptionTexts()[0]
-									.indexOf(Configuration.SOS_200_DUPLICATE_OBSERVATION_CONSTRAINT) > -1)) {
-						return Configuration.SOS_OBSERVATION_ALREADY_CONTAINED;
-					}
-					buf = buf.append(String.format(
-							"ExceptionCode: '%s' because of '%s'\n",
-							owsEx.getExceptionCode(),
-							Arrays.toString(owsEx.getExceptionTexts())));
-				}
-				LOG.error(String.format("Exception thrown: %s\n%s",
-						e.getMessage(), buf.toString()));
-				LOG.debug(e.getMessage(), e);
-			}
-
-		} catch (final OXFException e) {
-			LOG.error(
-					String.format("Problem with OXF. Exception thrown: %s",
-							e.getMessage()), e);
-		}
-		return null;
-	}
+//	/*
+//	 * (non-Javadoc)
+//	 * 
+//	 * @see de.i3mainz.springframework.ows.n52.sos.core.
+//	 * SensorObservationServiceOperations
+//	 * #insertObservation(org.n52.sos.importer.
+//	 * feeder.model.requests.InsertObservation)
+//	 */
+//	@Override
+//	public String insertObservation(final InsertObservation io)
+//			throws IOException {
+//		LOG.trace("insertObservation()");
+//		OperationResult opResult = null;
+//		org.n52.oxf.sos.request.InsertObservationParameters parameters = null;
+//
+//		try {
+//			parameters = createParameterAssemblyFromIO(io);
+//			try {
+//				LOG.debug("\n\nBEFORE OXF - doOperation \"InsertObservation\"\n\n");
+//				opResult = getSosWrapper().doInsertObservation(parameters);
+//				LOG.debug("\n\nAFTER OXF - doOperation \"InsertObservation\"\n\n");
+//				if (getConnectionParameter().getVersion().equals("1.0.0")) {
+//					try {
+//						final InsertObservationResponse response = InsertObservationResponseDocument.Factory
+//								.parse(opResult.getIncomingResultAsStream())
+//								.getInsertObservationResponse();
+//						LOG.debug(String
+//								.format("Observation inserted succesfully. Returned id: %s",
+//										response.getAssignedObservationId()));
+//						return response.getAssignedObservationId();
+//					} catch (final XmlException e) {
+//						// TODO Auto-generated catch block generated on
+//						// 20.06.2012 around 10:43:01
+//						LOG.error(
+//								String.format("Exception thrown: %s",
+//										e.getMessage()), e);
+//					} catch (final IOException e) {
+//						// TODO Auto-generated catch block generated on
+//						// 20.06.2012 around 10:43:01
+//						LOG.error(
+//								String.format("Exception thrown: %s",
+//										e.getMessage()), e);
+//					}
+//				} else if (getConnectionParameter().getVersion()
+//						.equals("2.0.0")) {
+//					try {
+//						net.opengis.sos.x20.InsertObservationResponseDocument.Factory
+//								.parse(opResult.getIncomingResultAsStream())
+//								.getInsertObservationResponse();
+//						LOG.debug("Observation inserted successfully.");
+//						return "SOS 2.0 InsertObservation doesn't return the assigned id";
+//					} catch (final XmlException e) {
+//						LOG.error("Exception thrown: {}", e.getMessage(), e);
+//					}
+//				}
+//			} catch (final ExceptionReport e) {
+//				final Iterator<OWSException> iter = e.getExceptionsIterator();
+//				StringBuffer buf = new StringBuffer();
+//				while (iter.hasNext()) {
+//					final OWSException owsEx = iter.next();
+//					// check for observation already contained exception
+//					if (owsEx
+//							.getExceptionCode()
+//							.equals(Configuration.SOS_EXCEPTION_CODE_NO_APPLICABLE_CODE)
+//							&& owsEx.getExceptionTexts().length > 0
+//							&& (owsEx.getExceptionTexts()[0]
+//									.indexOf(Configuration.SOS_EXCEPTION_OBSERVATION_DUPLICATE_CONSTRAINT) > -1
+//									|| owsEx.getExceptionTexts()[0]
+//											.indexOf(Configuration.SOS_EXCEPTION_OBSERVATION_ALREADY_CONTAINED) > -1 || owsEx
+//									.getExceptionTexts()[0]
+//									.indexOf(Configuration.SOS_200_DUPLICATE_OBSERVATION_CONSTRAINT) > -1)) {
+//						return Configuration.SOS_OBSERVATION_ALREADY_CONTAINED;
+//					}
+//					buf = buf.append(String.format(
+//							"ExceptionCode: '%s' because of '%s'\n",
+//							owsEx.getExceptionCode(),
+//							Arrays.toString(owsEx.getExceptionTexts())));
+//				}
+//				LOG.error(String.format("Exception thrown: %s\n%s",
+//						e.getMessage(), buf.toString()));
+//				LOG.debug(e.getMessage(), e);
+//			}
+//
+//		} catch (final OXFException e) {
+//			LOG.error(
+//					String.format("Problem with OXF. Exception thrown: %s",
+//							e.getMessage()), e);
+//		}
+//		return null;
+//	}
 
 }

@@ -18,6 +18,7 @@ group = 'de.i3mainz.springframework.ogc.swe'
 
 repositories {
 	maven { url 'http://mvnrepo.geoinform.fh-mainz.de/artifactory/remote-repos/' }
+	mavenCentral()
 	mavenLocal()
 }
 
@@ -50,8 +51,8 @@ sourceSets {
 dependencies {
 	compile project(":spring:data:spring-ogc:spring-ogc-core")
 	compile "org.n52.sensorweb:oxf-sos-adapter:$oxfVersion"
-	compile "org.n52.sensorweb:52n-sos-importer-bindings:$n52SOSImporterVersion"
-	compile "org.n52.sensorweb:52n-sos-importer-feeder:$n52SOSImporterVersion"
+	//compile "org.n52.sensorweb:52n-sos-importer-bindings:$n52SOSImporterVersion"
+	//compile "org.n52.sensorweb:52n-sos-importer-feeder:$n52SOSImporterVersion"
 
 	testCompile "junit:junit-dep:$junitVersion"
 	testCompile "log4j:log4j:$log4jVersion"
