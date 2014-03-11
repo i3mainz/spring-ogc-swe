@@ -23,9 +23,10 @@
 	</bean>
 
 	<bean id="testsensor" class="de.i3mainz.springframework.swe.n52.sos.model.Sensor">
-		<constructor-arg name="id" value="Test1000" />
+		<constructor-arg name="id" value="Test2000" />
 		<constructor-arg name="offeringId" value="Twitter_Sentiment" />
 		<constructor-arg name="offeringName" value="Twitter Sentiment Analyse" />
+		<property name="name" value="TEST 2000"></property>
 	</bean>
 
 	<bean id="testFOI"

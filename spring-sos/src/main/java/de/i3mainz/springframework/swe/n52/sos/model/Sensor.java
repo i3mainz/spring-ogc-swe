@@ -3,6 +3,7 @@ package de.i3mainz.springframework.swe.n52.sos.model;
 public class Sensor {
 
 	private String id;
+	private String name;
 	private Offering offering;
 
 	public Sensor(String id, Offering offering) {
@@ -28,6 +29,22 @@ public class Sensor {
 	 */
 	public final void setId(String id) {
 		this.id = id;
+	}
+	
+	
+
+	/**
+	 * @return the name
+	 */
+	public final String getName() {
+		return name;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public final void setName(String name) {
+		this.name = name;
 	}
 
 	/**

@@ -4,19 +4,31 @@ package de.i3mainz.springframework.swe.n52.sos.core;
 //import static org.n52.sos.importer.feeder.Configuration.SOS_OBSERVATION_TYPE_COUNT;
 //import static org.n52.sos.importer.feeder.Configuration.SOS_OBSERVATION_TYPE_TEXT;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import org.apache.xmlbeans.XmlException;
 import org.n52.oxf.OXFException;
 import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.sos.adapter.ISOSRequestBuilder.Binding;
 import org.n52.oxf.sos.adapter.wrapper.SOSWrapper;
 import org.n52.oxf.sos.adapter.wrapper.SosWrapperFactory;
+import org.n52.oxf.sos.adapter.wrapper.builder.ObservationTemplateBuilder;
+import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
+import org.n52.oxf.sos.request.v200.InsertSensorParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.i3mainz.springframework.ogc.OWSConnectionParameter;
 import de.i3mainz.springframework.ogc.core.OWSAccessor;
+import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
+import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
 
 public abstract class SOSAccessor extends OWSAccessor {
 
@@ -28,7 +40,7 @@ public abstract class SOSAccessor extends OWSAccessor {
 	private SOSWrapper sosWrapper;
 	private Binding sosBinding;
 	private Map<String, String> offerings;
-//	private DescriptionBuilder sensorDescBuilder;
+	private DescriptionBuilder sensorDescBuilder;
 
 	@Override
 	public void setConnectionParameter(
@@ -79,22 +91,6 @@ public abstract class SOSAccessor extends OWSAccessor {
 //		return sensorDescBuilder;
 //	}
 
-//	protected Collection<String> getObservationTypeURIs(final RegisterSensor rs) {
-//		if (rs == null || rs.getObservedProperties() == null
-//				|| rs.getObservedProperties().size() < 1) {
-//			return Collections.emptyList();
-//		}
-//		final Set<String> tmp = new HashSet<String>(rs.getObservedProperties()
-//				.size());
-//		for (final ObservedProperty obsProp : rs.getObservedProperties()) {
-//			final String measuredValueType = rs.getMeasuredValueType(obsProp);
-//			if (measuredValueType != null) {
-//				tmp.add(getURIForObservationType(measuredValueType));
-//			}
-//		}
-//		return tmp;
-//	}
-
 	private String getURIForObservationType(final String measuredValueType) {
 		if (measuredValueType.equals("NUMERIC")) {
 			return "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement";
@@ -114,63 +110,58 @@ public abstract class SOSAccessor extends OWSAccessor {
 		throw new IllegalArgumentException(errorMsg);
 	}
 
-//	protected RegisterSensorParameters createRegisterSensorParametersFromRS(
-//			final RegisterSensor registerSensor) throws OXFException,
-//			XmlException, IOException {
-//		LOG.trace("createParameterContainterFromRS()");
-//
-//		// create SensorML
-//		// create template --> within the 52N 1.0.0 SOS implementation this
-//		// template is somehow ignored --> take first observed property to get
-//		// values for template
-//		ObservationTemplateBuilder observationTemplate;
-//		final ObservedProperty firstObservedProperty = registerSensor
-//				.getObservedProperties().iterator().next();
-//		if (registerSensor.getMeasuredValueType(firstObservedProperty).equals(
-//				SOS_OBSERVATION_TYPE_TEXT)) {
-//			observationTemplate = ObservationTemplateBuilder
-//					.createObservationTemplateBuilderForTypeText();
-//		} else if (registerSensor.getMeasuredValueType(firstObservedProperty)
-//				.equals(SOS_OBSERVATION_TYPE_COUNT)) {
-//			observationTemplate = ObservationTemplateBuilder
-//					.createObservationTemplateBuilderForTypeCount();
-//		} else if (registerSensor.getMeasuredValueType(firstObservedProperty)
-//				.equals(SOS_OBSERVATION_TYPE_BOOLEAN)) {
-//			observationTemplate = ObservationTemplateBuilder
-//					.createObservationTemplateBuilderForTypeTruth();
-//		} else {
-//			observationTemplate = ObservationTemplateBuilder
-//					.createObservationTemplateBuilderForTypeMeasurement(registerSensor
-//							.getUnitOfMeasurementCode(firstObservedProperty));
-//		}
-//		observationTemplate.setDefaultValue(registerSensor.getDefaultValue());
-//
-//		return new RegisterSensorParameters(getSensorDescBuilder().createSML(
-//				registerSensor),
-//				observationTemplate.generateObservationTemplate());
-//	}
+	protected RegisterSensorParameters createRegisterSensorParametersFromRS(
+			final Sensor registerSensor) throws OXFException,
+			XmlException, IOException {
+		LOG.trace("createParameterContainterFromRS()");
+		ObservationTemplateBuilder observationTemplate;
+		observationTemplate = ObservationTemplateBuilder.createObservationTemplateBuilderForTypeText();
+		observationTemplate.setDefaultValue(" ");
 
-//	protected InsertSensorParameters createInsertSensorParametersFromRS(
-//			final RegisterSensor rs) throws XmlException, IOException {
-//		return new InsertSensorParameters(getSensorDescBuilder().createSML(rs),
-//				SML_101_FORMAT_URI,
-//				getObservedPropertyURIs(rs.getObservedProperties()),
-//				Collections.singleton(OM_200_SAMPLING_FEATURE),
-//				getObservationTypeURIs(rs));
-//	}
+		return new RegisterSensorParameters(this.sensorDescBuilder.createSML(
+				registerSensor),
+				observationTemplate.generateObservationTemplate());
+	}
 
-//	private Collection<String> getObservedPropertyURIs(
-//			final Collection<ObservedProperty> observedProperties) {
-//		if (observedProperties == null || observedProperties.size() < 1) {
-//			return Collections.emptyList();
-//		}
-//		final Collection<String> result = new ArrayList<String>(
-//				observedProperties.size());
+	protected InsertSensorParameters createInsertSensorParametersFromRS(
+			final Sensor rs) throws XmlException, IOException {
+		return new InsertSensorParameters(this.sensorDescBuilder.createSML(rs),
+				SML_101_FORMAT_URI,
+				getObservedPropertyURIs(null),
+				Collections.singleton(OM_200_SAMPLING_FEATURE),
+				getObservationTypeURIs(rs));
+	}
+
+	private Collection<String> getObservedPropertyURIs(
+			final Collection<?> observedProperties) {
+		if (observedProperties == null || observedProperties.size() < 1) {
+			final Collection<String> result = new ArrayList<String>();
+			result.add("urn:ogc:def:dataType:OGC:1.1:string");
+			return result;
+		}
+		final Collection<String> result = new ArrayList<String>(
+				observedProperties.size());
 //		for (final ObservedProperty observedProperty : observedProperties) {
 //			result.add(observedProperty.getUri());
 //		}
-//		return result;
-//	}
+		return result;
+	}
+	
+	private Collection<String> getObservationTypeURIs(final Sensor rs) {
+		if (rs == null) {
+			final Set<String> tmp = new HashSet<String>();
+			tmp.add(getURIForObservationType("TEXT"));
+			return tmp;
+		}
+		final Set<String> tmp = new HashSet<String>();
+//		for (final ObservedProperty obsProp : rs.getObservedProperties()) {
+//			final String measuredValueType = rs.getMeasuredValueType(obsProp);
+//			if (measuredValueType != null) {
+//				tmp.add(getURIForObservationType(measuredValueType));
+//			}
+//		}
+		return tmp;
+	}
 
 //	protected org.n52.oxf.sos.request.InsertObservationParameters createParameterAssemblyFromIO(
 //			final InsertObservation io) throws OXFException {
@@ -243,8 +234,11 @@ public abstract class SOSAccessor extends OWSAccessor {
 //	}
 
 	public void afterPropertiesSet() throws Exception {
-		// TODO Auto-generated method stub
-
+		if (getConnectionParameter().getVersion().equals("2.0.0")) {
+			sensorDescBuilder = new DescriptionBuilder(false);
+		} else {
+			sensorDescBuilder = new DescriptionBuilder();
+		}
 	}
 
 }
