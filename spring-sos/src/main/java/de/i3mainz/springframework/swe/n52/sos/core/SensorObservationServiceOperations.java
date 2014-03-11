@@ -19,7 +19,6 @@ public interface SensorObservationServiceOperations {
 	public abstract <T> String registerSensor(T o, Collection<T> mapper);
 
 	public abstract String registerSensor(Sensor sensor);
-	public abstract String registerSensor_1(Sensor sensor);
 
 //	public abstract String registerSensor(RegisterSensor rs);
 //

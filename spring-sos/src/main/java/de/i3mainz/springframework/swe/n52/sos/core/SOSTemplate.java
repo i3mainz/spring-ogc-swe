@@ -91,32 +91,32 @@ public class SOSTemplate extends SOSAccessor implements
 		return null;
 	}
 
-	@Override
-	public String registerSensor(Sensor sensor) {
-		String responserequest = "";
-		String test_xml = "";
-		Sos_sensor sensor_reg = new Sos_sensor();
-
-		sensor_reg.set_sensor(sensor.getId(), sensor.getOffering().getId(),
-				sensor.getOffering().getName());
-		test_xml = Sos_xml_doc.register_sensor(sensor_reg);
-		responserequest = Http_connect.excutePost(getConnectionParameter()
-				.getUrl(), Sos_xml_doc.register_sensor(sensor_reg));
-
-		// responserequest = test_xml;
-		/*
-		 * Antwort parsen!!! <?xml version="1.0" encoding="UTF-8"?>
-		 * <sos:RegisterSensorResponse
-		 * xmlns:sos="http://www.opengis.net/sos/1.0"
-		 * xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 * xsi:schemaLocation=
-		 * "http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
-		 * > <sos:AssignedSensorId>Twitter_Sens</sos:AssignedSensorId>
-		 * </sos:RegisterSensorResponse>
-		 */
-
-		return responserequest;
-	}
+//	@Override
+//	public String registerSensor(Sensor sensor) {
+//		String responserequest = "";
+//		String test_xml = "";
+//		Sos_sensor sensor_reg = new Sos_sensor();
+//
+//		sensor_reg.set_sensor(sensor.getId(), sensor.getOffering().getId(),
+//				sensor.getOffering().getName());
+//		test_xml = Sos_xml_doc.register_sensor(sensor_reg);
+//		responserequest = Http_connect.excutePost(getConnectionParameter()
+//				.getUrl(), Sos_xml_doc.register_sensor(sensor_reg));
+//
+//		// responserequest = test_xml;
+//		/*
+//		 * Antwort parsen!!! <?xml version="1.0" encoding="UTF-8"?>
+//		 * <sos:RegisterSensorResponse
+//		 * xmlns:sos="http://www.opengis.net/sos/1.0"
+//		 * xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+//		 * xsi:schemaLocation=
+//		 * "http://www.opengis.net/sos/1.0 http://schemas.opengis.net/sos/1.0.0/sosAll.xsd"
+//		 * > <sos:AssignedSensorId>Twitter_Sens</sos:AssignedSensorId>
+//		 * </sos:RegisterSensorResponse>
+//		 */
+//
+//		return responserequest;
+//	}
 
 	/*
 	 * (non-Javadoc)
@@ -124,7 +124,8 @@ public class SOSTemplate extends SOSAccessor implements
 	 * @see de.i3mainz.springframework.ows.n52.sos.core.
 	 * SensorObservationServiceOperations
 	 */
-	public String registerSensor_1(final Sensor rs) {
+	@Override
+	public String registerSensor(final Sensor rs) {
 		try {
 			if (getConnectionParameter().getVersion().equals("1.0.0")) {
 				LOG.trace("registerSensor()");

@@ -2,11 +2,6 @@ package de.i3mainz.springframework.swe.sos;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -19,6 +14,7 @@ import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 
+@SuppressWarnings("deprecation")
 @ContextConfiguration
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SOSTest {

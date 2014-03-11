@@ -75,7 +75,7 @@ public class SOSServiceImp implements SOSService {
 
 	@Override
 	public String insertSensor(Sensor sensor) {
-		return sos.registerSensor_1(sensor);
+		return sos.registerSensor(sensor);
 	}
 
 	@Override
