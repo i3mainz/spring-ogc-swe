@@ -1,5 +1,6 @@
 package de.i3mainz.springframework.swe.sos;
 
+import java.io.IOException;
 import java.net.URL;
 
 import org.n52.oxf.sos.capabilities.ObservationOffering;
@@ -90,7 +91,7 @@ public class SOSServiceImp implements SOSService {
 
 	@Override
 	public String insertObservation(Sensor sensor, FeatureOfInterest foi,
-			Observation observation) {
+			Observation observation) throws IOException {
 		return sos.insertObservation(sensor.getId(), foi, observation);
 	}
 

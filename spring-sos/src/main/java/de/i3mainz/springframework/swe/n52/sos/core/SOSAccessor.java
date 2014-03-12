@@ -16,10 +16,13 @@ import java.util.Set;
 import org.apache.xmlbeans.XmlException;
 import org.n52.oxf.OXFException;
 import org.n52.oxf.ows.ExceptionReport;
+import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
 import org.n52.oxf.sos.adapter.ISOSRequestBuilder.Binding;
 import org.n52.oxf.sos.adapter.wrapper.SOSWrapper;
 import org.n52.oxf.sos.adapter.wrapper.SosWrapperFactory;
 import org.n52.oxf.sos.adapter.wrapper.builder.ObservationTemplateBuilder;
+import org.n52.oxf.sos.observation.ObservationParameters;
+import org.n52.oxf.sos.observation.TextObservationParameters;
 import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
 import org.n52.oxf.sos.request.v200.InsertSensorParameters;
 import org.slf4j.Logger;
@@ -27,7 +30,10 @@ import org.slf4j.LoggerFactory;
 
 import de.i3mainz.springframework.ogc.OWSConnectionParameter;
 import de.i3mainz.springframework.ogc.core.OWSAccessor;
+import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
+import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
+import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
 import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
 
 public abstract class SOSAccessor extends OWSAccessor {
@@ -48,7 +54,7 @@ public abstract class SOSAccessor extends OWSAccessor {
 		super.setConnectionParameter(owsConnectionParameter);
 		this.sosBinding = ((de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter) getConnectionParameter())
 				.getBinding();
-//		sensorDescBuilder = new DescriptionBuilder();
+		// sensorDescBuilder = new DescriptionBuilder();
 		try {
 			this.sosWrapper = SosWrapperFactory.newInstance(
 					owsConnectionParameter.getUrl(),
@@ -84,12 +90,12 @@ public abstract class SOSAccessor extends OWSAccessor {
 		return offerings;
 	}
 
-//	/**
-//	 * @return the sensorDescBuilder
-//	 */
-//	protected final DescriptionBuilder getSensorDescBuilder() {
-//		return sensorDescBuilder;
-//	}
+	// /**
+	// * @return the sensorDescBuilder
+	// */
+	// protected final DescriptionBuilder getSensorDescBuilder() {
+	// return sensorDescBuilder;
+	// }
 
 	private String getURIForObservationType(final String measuredValueType) {
 		if (measuredValueType.equals("NUMERIC")) {
@@ -111,23 +117,23 @@ public abstract class SOSAccessor extends OWSAccessor {
 	}
 
 	protected RegisterSensorParameters createRegisterSensorParametersFromRS(
-			final Sensor registerSensor) throws OXFException,
-			XmlException, IOException {
+			final Sensor registerSensor) throws OXFException, XmlException,
+			IOException {
 		LOG.trace("createParameterContainterFromRS()");
 		ObservationTemplateBuilder observationTemplate;
-		observationTemplate = ObservationTemplateBuilder.createObservationTemplateBuilderForTypeText();
+		observationTemplate = ObservationTemplateBuilder
+				.createObservationTemplateBuilderForTypeText();
 		observationTemplate.setDefaultValue(" ");
 
-		return new RegisterSensorParameters(this.sensorDescBuilder.createSML(
-				registerSensor),
+		return new RegisterSensorParameters(
+				this.sensorDescBuilder.createSML(registerSensor),
 				observationTemplate.generateObservationTemplate());
 	}
 
 	protected InsertSensorParameters createInsertSensorParametersFromRS(
 			final Sensor rs) throws XmlException, IOException {
 		return new InsertSensorParameters(this.sensorDescBuilder.createSML(rs),
-				SML_101_FORMAT_URI,
-				getObservedPropertyURIs(null),
+				SML_101_FORMAT_URI, getObservedPropertyURIs(null),
 				Collections.singleton(OM_200_SAMPLING_FEATURE),
 				getObservationTypeURIs(rs));
 	}
@@ -141,12 +147,12 @@ public abstract class SOSAccessor extends OWSAccessor {
 		}
 		final Collection<String> result = new ArrayList<String>(
 				observedProperties.size());
-//		for (final ObservedProperty observedProperty : observedProperties) {
-//			result.add(observedProperty.getUri());
-//		}
+		// for (final ObservedProperty observedProperty : observedProperties) {
+		// result.add(observedProperty.getUri());
+		// }
 		return result;
 	}
-	
+
 	private Collection<String> getObservationTypeURIs(final Sensor rs) {
 		if (rs == null) {
 			final Set<String> tmp = new HashSet<String>();
@@ -154,53 +160,54 @@ public abstract class SOSAccessor extends OWSAccessor {
 			return tmp;
 		}
 		final Set<String> tmp = new HashSet<String>();
-//		for (final ObservedProperty obsProp : rs.getObservedProperties()) {
-//			final String measuredValueType = rs.getMeasuredValueType(obsProp);
-//			if (measuredValueType != null) {
-//				tmp.add(getURIForObservationType(measuredValueType));
-//			}
-//		}
+		// for (final ObservedProperty obsProp : rs.getObservedProperties()) {
+		// final String measuredValueType = rs.getMeasuredValueType(obsProp);
+		// if (measuredValueType != null) {
+		// tmp.add(getURIForObservationType(measuredValueType));
+		// }
+		// }
 		return tmp;
 	}
 
-//	protected org.n52.oxf.sos.request.InsertObservationParameters createParameterAssemblyFromIO(
-//			final InsertObservation io) throws OXFException {
-//
-//		LOG.trace("createParameterBuilderFromIO()");
-//		ObservationParameters obsParameter = null;
-//
-//		if (io.getMeasuredValueType().equals(
-//				Configuration.SOS_OBSERVATION_TYPE_TEXT)) {
-//			// set text
-//			obsParameter = new TextObservationParameters();
-//			((TextObservationParameters) obsParameter).addObservationValue(io
-//					.getResultValue().toString());
-//		} else if (io.getMeasuredValueType().equals(
-//				Configuration.SOS_OBSERVATION_TYPE_COUNT)) {
-//			// set count
-//			obsParameter = new CountObservationParameters();
-//			((CountObservationParameters) obsParameter)
-//					.addObservationValue((Integer) io.getResultValue());
-//		} else if (io.getMeasuredValueType().equals(
-//				Configuration.SOS_OBSERVATION_TYPE_BOOLEAN)) {
-//			// set boolean
-//			obsParameter = new BooleanObservationParameters();
-//			((BooleanObservationParameters) obsParameter)
-//					.addObservationValue((Boolean) io.getResultValue());
-//		} else {
-//			// set default value type
-//			obsParameter = new MeasurementObservationParameters();
-//			((MeasurementObservationParameters) obsParameter).addUom(io
-//					.getUnitOfMeasurementCode());
-//			((MeasurementObservationParameters) obsParameter)
-//					.addObservationValue(io.getResultValue().toString());
-//		}
-//		obsParameter.addObservedProperty(io.getObservedPropertyURI());
-//		obsParameter.addNewFoiId(io.getFeatureOfInterestURI());
-//		obsParameter.addNewFoiName(io.getFeatureOfInterestName());
-//		obsParameter.addFoiDescription(io.getFeatureOfInterestURI());
-//		// position
-//		boolean eastingFirst = false;
+	protected org.n52.oxf.sos.request.InsertObservationParameters createParameterAssemblyFromIO(
+			final String sensorID, final FeatureOfInterest foi,
+			final Observation observation) throws OXFException {
+
+		LOG.trace("createParameterBuilderFromIO()");
+		ObservationParameters obsParameter = null;
+
+		// if (io.getMeasuredValueType().equals(
+		// Configuration.SOS_OBSERVATION_TYPE_TEXT)) {
+		// set text
+		obsParameter = new TextObservationParameters();
+		((TextObservationParameters) obsParameter)
+				.addObservationValue(observation.getValue().toString());
+		// } else if (io.getMeasuredValueType().equals(
+		// Configuration.SOS_OBSERVATION_TYPE_COUNT)) {
+		// // set count
+		// obsParameter = new CountObservationParameters();
+		// ((CountObservationParameters) obsParameter)
+		// .addObservationValue((Integer) io.getResultValue());
+		// } else if (io.getMeasuredValueType().equals(
+		// Configuration.SOS_OBSERVATION_TYPE_BOOLEAN)) {
+		// // set boolean
+		// obsParameter = new BooleanObservationParameters();
+		// ((BooleanObservationParameters) obsParameter)
+		// .addObservationValue((Boolean) io.getResultValue());
+		// } else {
+		// // set default value type
+		// obsParameter = new MeasurementObservationParameters();
+		// ((MeasurementObservationParameters) obsParameter).addUom(io
+		// .getUnitOfMeasurementCode());
+		// ((MeasurementObservationParameters) obsParameter)
+		// .addObservationValue(io.getResultValue().toString());
+		// }
+		obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
+		obsParameter.addNewFoiId(foi.getId());
+		obsParameter.addNewFoiName(foi.getName());
+		obsParameter.addFoiDescription(foi.getId());
+		// position
+		boolean eastingFirst = false;
 //		if (Configuration.EPSG_EASTING_FIRST_MAP.get(io.getEpsgCode()) == null) {
 //			Configuration.EPSG_EASTING_FIRST_MAP.get("default");
 //		} else {
@@ -213,25 +220,27 @@ public abstract class SOSAccessor extends OWSAccessor {
 //		if (io.isSetAltitudeValue()) {
 //			pos = String.format("% %", pos, io.getAltitudeValue());
 //		}
-//		obsParameter.addFoiPosition(pos);
-//		obsParameter.addObservedProperty(io.getObservedPropertyURI());
-//		obsParameter.addProcedure(io.getSensorURI());
-//
-//		if (getConnectionParameter().getVersion().equalsIgnoreCase("2.0.0")) {
-//			obsParameter.addSrsPosition(Configuration.SOS_200_EPSG_CODE_PREFIX
-//					+ io.getEpsgCode());
-//			obsParameter.addPhenomenonTime(io.getTimeStamp());
-//			obsParameter.addResultTime(io.getTimeStamp());
-//			return new org.n52.oxf.sos.request.v200.InsertObservationParameters(
-//					obsParameter, Collections.singletonList(io.getSensorURI()));
-//		}
-//
-//		obsParameter.addSrsPosition(Configuration.SOS_100_EPSG_CODE_PREFIX
-//				+ io.getEpsgCode());
-//		obsParameter.addSamplingTime(io.getTimeStamp());
-//		return new org.n52.oxf.sos.request.v100.InsertObservationParameters(
-//				obsParameter);
-//	}
+		
+		String pos = eastingFirst ? "" : foi.getPosition();
+		obsParameter.addFoiPosition(pos);
+		obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
+		obsParameter.addProcedure(sensorID);
+
+		if (getConnectionParameter().getVersion().equalsIgnoreCase("2.0.0")) {
+			obsParameter.addSrsPosition(Configuration.SOS_200_EPSG_CODE_PREFIX+"4326");
+			obsParameter.addPhenomenonTime(observation.getTimeAsSTring());
+			obsParameter.addResultTime(observation.getTimeAsSTring());
+			return new org.n52.oxf.sos.request.v200.InsertObservationParameters(
+					obsParameter, Collections.singletonList(sensorID));
+		}
+		
+//		obsParameter.addSrsPosition(Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
+		obsParameter.addParameterValue("srsName", Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
+		//obsParameter.addSamplingTime(observation.getTimeAsSTring());
+		obsParameter.addParameterValue(ISOSRequestBuilder.INSERT_OBSERVATION_SAMPLING_TIME,observation.getTimeAsSTring());
+		return new org.n52.oxf.sos.request.v100.InsertObservationParameters(
+				obsParameter);
+	}
 
 	public void afterPropertiesSet() throws Exception {
 		if (getConnectionParameter().getVersion().equals("2.0.0")) {

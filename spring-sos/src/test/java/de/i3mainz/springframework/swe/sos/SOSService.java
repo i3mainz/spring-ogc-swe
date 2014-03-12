@@ -1,5 +1,7 @@
 package de.i3mainz.springframework.swe.sos;
 
+import java.io.IOException;
+
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -20,6 +22,6 @@ public interface SOSService {
 
 	String insertSensor(Sensor sensor);
 	String insertObservation(Sensor sensor, FeatureOfInterest foi,
-			Observation observation);
+			Observation observation) throws IOException;
 
 }

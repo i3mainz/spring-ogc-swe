@@ -1,5 +1,6 @@
 package de.i3mainz.springframework.swe.n52.sos.core;
 
+import java.io.IOException;
 import java.util.Collection;
 
 import org.n52.oxf.ows.ServiceDescriptor;
@@ -25,6 +26,6 @@ public interface SensorObservationServiceOperations {
 //	public abstract String insertObservation(InsertObservation io)
 //			throws IOException;
 
-	public abstract String insertObservation(String sensorId, FeatureOfInterest foi, Observation observation);
+	public abstract String insertObservation(String sensorId, FeatureOfInterest foi, Observation observation) throws IOException;
 
 }

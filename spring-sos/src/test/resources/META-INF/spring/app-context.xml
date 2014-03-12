@@ -23,10 +23,10 @@
 	</bean>
 
 	<bean id="testsensor" class="de.i3mainz.springframework.swe.n52.sos.model.Sensor">
-		<constructor-arg name="id" value="Test2000" />
+		<constructor-arg name="id" value="Test3000" />
 		<constructor-arg name="offeringId" value="Twitter_Sentiment" />
 		<constructor-arg name="offeringName" value="Twitter Sentiment Analyse" />
-		<property name="name" value="TEST 2000"></property>
+		<property name="name" value="TEST 3000"></property>
 	</bean>
 
 	<bean id="testFOI"
@@ -37,7 +37,7 @@
 	</bean>
 
 	<bean id="dateFormat" class="java.text.SimpleDateFormat">
-		<constructor-arg value="yyyy-MM-dd'T'HH:mm:ssX" />
+		<constructor-arg value="yyyy-MM-dd'T'HH:mm:ssZ" />
 	</bean>
 
 	<bean id="testobservation"
