@@ -3,6 +3,9 @@ package de.i3mainz.springframework.swe.n52.sos.core;
 import java.io.IOException;
 import java.util.Collection;
 
+import org.n52.oxf.OXFException;
+import org.n52.oxf.adapter.OperationResult;
+import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.ows.ServiceDescriptor;
 
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
@@ -28,4 +31,5 @@ public interface SensorObservationServiceOperations {
 
 	public abstract String insertObservation(String sensorId, FeatureOfInterest foi, Observation observation) throws IOException;
 
+	public OperationResult getFeatureOfInterest(String foiID) throws OXFException, ExceptionReport;
 }

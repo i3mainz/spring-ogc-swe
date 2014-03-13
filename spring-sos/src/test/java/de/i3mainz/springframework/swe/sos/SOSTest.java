@@ -50,6 +50,11 @@ public class SOSTest {
 		System.out.println(service.insertObservation(sensor, foi, observation));
 
 	}
+	@Test
+	public void testGetFeatureOfInterest() throws Exception {
+		System.out.println(service.getFeatureOfInterest(foi.getId()));
+
+	}
 	// @Test
 	// public void testSOSGetObservation() throws Exception{
 	// assertNotNull(service.getObservation());

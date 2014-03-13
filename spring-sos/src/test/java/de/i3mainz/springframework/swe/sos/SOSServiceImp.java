@@ -2,7 +2,10 @@ package de.i3mainz.springframework.swe.sos;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Scanner;
 
+import org.n52.oxf.OXFException;
+import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.sos.capabilities.ObservationOffering;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
@@ -12,7 +15,6 @@ import de.i3mainz.springframework.swe.n52.sos.core.SensorObservationServiceOpera
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
-import de.i3mainz.springframework.swe.sos.SOSService;
 
 /**
  * {@link SOSService} with hard-coded input data.
@@ -93,6 +95,14 @@ public class SOSServiceImp implements SOSService {
 	public String insertObservation(Sensor sensor, FeatureOfInterest foi,
 			Observation observation) throws IOException {
 		return sos.insertObservation(sensor.getId(), foi, observation);
+	}
+
+	@Override
+	public String getFeatureOfInterest(String foiID) throws OXFException,
+			ExceptionReport {
+		return new Scanner(sos.getFeatureOfInterest(foiID)
+				.getIncomingResultAsStream(), "UTF-8").useDelimiter("\\A")
+				.next();
 	}
 
 }
