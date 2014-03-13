@@ -202,12 +202,12 @@ public abstract class SOSAccessor extends OWSAccessor {
 		// ((MeasurementObservationParameters) obsParameter)
 		// .addObservationValue(io.getResultValue().toString());
 		// }
-		obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
+		//obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
 		obsParameter.addNewFoiId(foi.getId());
 		obsParameter.addNewFoiName(foi.getName());
 		obsParameter.addFoiDescription(foi.getId());
 		// position
-		boolean eastingFirst = false;
+//		boolean eastingFirst = false;
 //		if (Configuration.EPSG_EASTING_FIRST_MAP.get(io.getEpsgCode()) == null) {
 //			Configuration.EPSG_EASTING_FIRST_MAP.get("default");
 //		} else {
@@ -221,9 +221,9 @@ public abstract class SOSAccessor extends OWSAccessor {
 //			pos = String.format("% %", pos, io.getAltitudeValue());
 //		}
 		
-		String pos = eastingFirst ? "" : foi.getPosition();
+		String pos = foi.getPosition();
 		obsParameter.addFoiPosition(pos);
-		obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
+		//obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
 		obsParameter.addProcedure(sensorID);
 
 		if (getConnectionParameter().getVersion().equalsIgnoreCase("2.0.0")) {
@@ -235,7 +235,7 @@ public abstract class SOSAccessor extends OWSAccessor {
 		}
 		
 //		obsParameter.addSrsPosition(Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
-		obsParameter.addParameterValue("srsName", Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
+		//obsParameter.addParameterValue("srsName", Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
 		//obsParameter.addSamplingTime(observation.getTimeAsSTring());
 		obsParameter.addParameterValue(ISOSRequestBuilder.INSERT_OBSERVATION_SAMPLING_TIME,observation.getTimeAsSTring());
 		return new org.n52.oxf.sos.request.v100.InsertObservationParameters(
