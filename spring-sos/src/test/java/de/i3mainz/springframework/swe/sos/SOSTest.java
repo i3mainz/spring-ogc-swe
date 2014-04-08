@@ -2,6 +2,11 @@ package de.i3mainz.springframework.swe.sos;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -27,6 +32,8 @@ public class SOSTest {
 	public FeatureOfInterest foi;
 	@Autowired
 	public Observation observation;
+	//@Autowired
+	public List<String> observedProperties;
 
 	@Test
 	public void testSimpleProperties() throws Exception {
@@ -50,16 +57,20 @@ public class SOSTest {
 		System.out.println(service.insertObservation(sensor, foi, observation));
 
 	}
+
 	@Test
 	public void testGetFeatureOfInterest() throws Exception {
 		System.out.println(service.getFeatureOfInterest(foi.getId()));
 
 	}
-	// @Test
-	// public void testSOSGetObservation() throws Exception{
-	// assertNotNull(service.getObservation());
-	// }
 
+	@Test
+	public void testSOSGetObservation() throws Exception {
+		// assertNotNull(service.getObservation());
+		observedProperties = new ArrayList<String>();
+		observedProperties.add("urn:ogc:def:dataType:OGC:1.1:string");
+		System.out.println(service.getObservation(sensor.getOffering().getId(),observedProperties));
+	}
 	// @Test
 	// public void testSOSInsertSensor() throws Exception {
 	// service.insertSensor();

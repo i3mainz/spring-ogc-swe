@@ -2,7 +2,7 @@
 <projectDescription>
 	<name>spring-sos</name>
 	<comment>Spring OGC SOS</comment>
-	<projects/>
+	<projects />
 	<natures>
 		<nature>org.springsource.ide.eclipse.gradle.core.nature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
@@ -11,12 +11,12 @@
 	<buildSpec>
 		<buildCommand>
 			<name>org.eclipse.jdt.core.javabuilder</name>
-			<arguments/>
+			<arguments />
 		</buildCommand>
 		<buildCommand>
 			<name>org.springframework.ide.eclipse.core.springbuilder</name>
-			<arguments/>
+			<arguments />
 		</buildCommand>
 	</buildSpec>
-	<linkedResources/>
+	<linkedResources />
 </projectDescription>

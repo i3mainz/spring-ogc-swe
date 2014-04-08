@@ -2,6 +2,7 @@ package de.i3mainz.springframework.swe.sos;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.Scanner;
 
 import org.n52.oxf.OXFException;
@@ -101,6 +102,15 @@ public class SOSServiceImp implements SOSService {
 	public String getFeatureOfInterest(String foiID) throws OXFException,
 			ExceptionReport {
 		return new Scanner(sos.getFeatureOfInterest(foiID)
+				.getIncomingResultAsStream(), "UTF-8").useDelimiter("\\A")
+				.next();
+	}
+
+	@Override
+	public String getObservation(String offeringId,
+			List<String> observedProperties) throws OXFException,
+			ExceptionReport {
+		return new Scanner(sos.getObservation(offeringId, observedProperties)
 				.getIncomingResultAsStream(), "UTF-8").useDelimiter("\\A")
 				.next();
 	}

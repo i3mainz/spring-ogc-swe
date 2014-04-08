@@ -1,6 +1,7 @@
 package de.i3mainz.springframework.swe.sos;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.n52.oxf.OXFException;
 import org.n52.oxf.ows.ExceptionReport;
@@ -8,7 +9,6 @@ import org.n52.oxf.ows.ExceptionReport;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
-
 
 public interface SOSService {
 
@@ -24,9 +24,14 @@ public interface SOSService {
 	boolean isSOSTransactional();
 
 	String insertSensor(Sensor sensor);
+
 	String insertObservation(Sensor sensor, FeatureOfInterest foi,
 			Observation observation) throws IOException;
 
-	String getFeatureOfInterest(String foiID) throws OXFException, ExceptionReport;
+	String getFeatureOfInterest(String foiID) throws OXFException,
+			ExceptionReport;
+
+	String getObservation(String offeringId, List<String> observedProperties)
+			throws OXFException, ExceptionReport;
 
 }

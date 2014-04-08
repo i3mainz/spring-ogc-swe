@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import net.opengis.sos.x10.InsertObservationResponseDocument.InsertObservationResponse;
 import net.opengis.sos.x10.RegisterSensorResponseDocument;
@@ -21,8 +22,10 @@ import org.n52.oxf.ows.capabilities.OperationsMetadata;
 import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
 import org.n52.oxf.sos.adapter.SOSAdapter;
 import org.n52.oxf.sos.adapter.wrapper.builder.GetFeatureOfInterestParameterBuilder_v100;
+import org.n52.oxf.sos.adapter.wrapper.builder.GetObservationParameterBuilder_v100;
 import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
 import org.n52.oxf.sos.request.v200.InsertSensorParameters;
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
 
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
@@ -328,10 +331,34 @@ public class SOSTemplate extends SOSAccessor implements
 	// return null;
 	// }
 
-	public OperationResult getFeatureOfInterest(String foiID) throws OXFException, ExceptionReport {
-		GetFeatureOfInterestParameterBuilder_v100 builder = new GetFeatureOfInterestParameterBuilder_v100(
-				foiID, ISOSRequestBuilder.GET_FOI_ID_PARAMETER);
-		return getSosWrapper().doGetFeatureOfInterest(builder);
+	public OperationResult getFeatureOfInterest(String foiID)
+			throws OXFException, ExceptionReport {
+		if (getConnectionParameter().getVersion().equals("1.0.0")) {
+			GetFeatureOfInterestParameterBuilder_v100 builder = new GetFeatureOfInterestParameterBuilder_v100(
+					foiID, ISOSRequestBuilder.GET_FOI_ID_PARAMETER);
+			return getSosWrapper().doGetFeatureOfInterest(builder);
+		} else if (getConnectionParameter().getVersion().equals("2.0.0")) {
+
+		}
+		return null;
+	}
+
+	public OperationResult getObservation(String offering,
+			List<String> observedProperties) throws OXFException,
+			ExceptionReport {
+		if (getConnectionParameter().getVersion().equals("1.0.0")) {
+			GetObservationParameterBuilder_v100 builder = new GetObservationParameterBuilder_v100(
+					offering, observedProperties.get(0),
+					"text/xml;subtype=\"om/1.0.0\"");
+			for (Iterator<String> propertiesItr = observedProperties
+					.listIterator(1); propertiesItr.hasNext();) {
+				builder.addObservedProperty(propertiesItr.next());
+			}
+			return getSosWrapper().doGetObservation(builder);
+		} else if (getConnectionParameter().getVersion().equals("2.0.0")) {
+
+		}
+		return null;
 	}
 
 }
