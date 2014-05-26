@@ -17,7 +17,7 @@ apply plugin: 'idea'
 group = 'de.i3mainz.springframework.ogc.swe'
 
 repositories {
-	maven { url 'http://mvnrepo.geoinform.fh-mainz.de/artifactory/remote-repos/' }
+	maven { url 'http://mvnrepo.geoinform.fh-mainz.de/artifactory/repos/' }
 	mavenCentral()
 	mavenLocal()
 }
