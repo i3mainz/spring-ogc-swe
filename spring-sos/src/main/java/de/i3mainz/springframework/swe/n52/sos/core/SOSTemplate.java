@@ -230,7 +230,7 @@ public class SOSTemplate extends SOSAccessor implements
 				foi.getName(), foi.getPosition(), observation.getValue()
 						.toString());
 		xml_doc_ins_obs = Sos_xml_doc.insert_observation(ins_obs);
-		LOG.info(xml_doc_ins_obs);
+		LOG.debug(xml_doc_ins_obs);
 		String responserequest;
 		responserequest = Http_connect.excutePost(getConnectionParameter()
 				.getUrl(), xml_doc_ins_obs);

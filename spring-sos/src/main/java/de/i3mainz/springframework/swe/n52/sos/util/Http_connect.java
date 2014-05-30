@@ -2,12 +2,13 @@ package de.i3mainz.springframework.swe.n52.sos.util;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.URLConnection;
 import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 
@@ -17,6 +18,10 @@ import java.net.URL;
  *
  */
 public abstract class Http_connect {
+    
+    private static final Logger LOG = LoggerFactory
+            .getLogger(Http_connect.class);
+    
 	/**
 	 * Erstellung einer Verbindung zu einem Webservice,
 	 * Anfrage übergabe,
@@ -63,7 +68,7 @@ public abstract class Http_connect {
 	
 	    } catch (Exception e) {
 	
-	      e.printStackTrace();
+	      LOG.error("Error in HTTP-Connection to SOS service!",e);
 	      return null;
 	
 	    } finally {

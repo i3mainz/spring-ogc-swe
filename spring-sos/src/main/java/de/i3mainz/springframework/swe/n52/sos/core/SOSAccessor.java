@@ -64,11 +64,9 @@ public abstract class SOSAccessor extends OWSAccessor {
 				offerings = new HashMap<String, String>();
 			}
 		} catch (ExceptionReport e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.error("SOS-Server throws Exception.", e1);
 		} catch (OXFException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOG.error("Error while accessing SOS-Service", e1);
 		}
 	}
 
