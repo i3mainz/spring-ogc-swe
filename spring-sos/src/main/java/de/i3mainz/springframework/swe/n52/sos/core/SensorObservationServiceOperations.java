@@ -15,23 +15,20 @@ import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 
 public interface SensorObservationServiceOperations {
 
-	public abstract ServiceDescriptor getCapabilities();
-
-	public abstract boolean isSOSAvailable();
-
-	public abstract boolean isSOSTransactional();
-
-	public abstract <T> String registerSensor(T o, Collection<T> mapper);
-
-	public abstract String registerSensor(Sensor sensor);
-
-//	public abstract String registerSensor(RegisterSensor rs);
-//
-//	public abstract String insertObservation(InsertObservation io)
-//			throws IOException;
-
-	public abstract String insertObservation(String sensorId, FeatureOfInterest foi, Observation observation) throws IOException;
-
-	public OperationResult getFeatureOfInterest(String foiID) throws OXFException, ExceptionReport;
-	public OperationResult getObservation(String offeringID, List<String>observedProperties) throws OXFException, ExceptionReport;
+    ServiceDescriptor getCapabilities();
+    boolean isSOSAvailable();
+    boolean isSOSTransactional();
+    <T> String registerSensor(T o, Collection<T> mapper);
+    String registerSensor(Sensor sensor);
+    // public abstract String registerSensor(RegisterSensor rs);
+    //
+    // public abstract String insertObservation(InsertObservation io)
+    // throws IOException;
+    String insertObservation(String sensorId, FeatureOfInterest foi,
+            Observation observation) throws IOException;
+    OperationResult getFeatureOfInterest(String foiID) throws OXFException,
+            ExceptionReport;
+    OperationResult getObservation(String offeringID,
+            List<String> observedProperties) throws OXFException,
+            ExceptionReport;
 }

@@ -21,16 +21,24 @@ package de.i3mainz.springframework.swe.n52.sos.util;
  *
  */
 public abstract class SosXMLDoc {
-	
+
 	/**
+     * Private Constructor 
+     * Class not instanceable
+     */
+    private SosXMLDoc() {
+        super();
+    }
+
+
+    /**
 	 * XML Document - SOS Register Sensor
 	 * @param sensor
 	 * @return
 	 */
 	public static String registerSensor(SosSensor sensor){
-			
-			// Important: tabspace (behind >  and  before "+)  --> Example: UTF-8\"?>	"+
-			final String header = (
+
+	    final String header =
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>	"+
 				"<RegisterSensor service=\"SOS\" version=\"1.0.0\"	"+
 					"xmlns=\"http://www.opengis.net/sos/1.0\"	"+
@@ -51,9 +59,9 @@ public abstract class SosXMLDoc {
 					"<SensorDescription>"+
 					"<sml:SensorML version=\"1.0.1\">"+
 					"<sml:member>"+
-						"<sml:System xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
+						"<sml:System xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
 						
-			final String identifierList= (				
+			final String identifierList=				
 							  "<!--sml:identification element must contain the ID of the sensor-->"+
 						     "<sml:identification>"+
 						          "<sml:IdentifierList>"+
@@ -63,9 +71,9 @@ public abstract class SosXMLDoc {
 						                    "</sml:Term>"+
 						               "</sml:identifier>"+
 						          "</sml:IdentifierList>"+
-						     "</sml:identification>");
+						     "</sml:identification>";
 			
-			final String position= (
+			final String position=
 						     "<!-- last measured position of sensor -->"+
 						     "<sml:position name=\"sensorPosition\">"+
 						          "<swe:Position referenceFrame=\"urn:ogc:def:crs:EPSG::4326\">"+
@@ -92,9 +100,9 @@ public abstract class SosXMLDoc {
 						                    "</swe:Vector>"+
 						               "</swe:location>"+
 						          "</swe:Position>"+
-						     "</sml:position>");
+						     "</sml:position>";
 			
-			final String phenomena= (
+			final String phenomena=
 						
 						     "<!-- list containing the input phenomena for this sensor system -->"+
 						     "<sml:inputs>"+
@@ -119,9 +127,9 @@ public abstract class SosXMLDoc {
 						                     "</swe:Category>"+
 						                "</sml:output>"+
 						           "</sml:OutputList>"+
-						      "</sml:outputs>");
+						      "</sml:outputs>";
 			
-			final String footer= (					      
+			final String footer=					      
 						"</sml:System>"+
 					"</sml:member>"+
 					"</sml:SensorML>"+
@@ -138,16 +146,16 @@ public abstract class SosXMLDoc {
 					     "</om:CategoryObservation>"+
 					"</ObservationTemplate>"+
 	
-			"</RegisterSensor>");
+			"</RegisterSensor>";
 			
 			//Sensor XML Document
 			
-			final String xmlRequestDoc = (
+			final String xmlRequestDoc =
 					header + 
 					identifierList + 
 					position + 
 					phenomena + 
-					footer); 
+					footer; 
 		
 			return xmlRequestDoc;
 		}
@@ -160,7 +168,7 @@ public abstract class SosXMLDoc {
 		 */
 		public static String insertObservation (SosObservation observation){
 			
-			final String header =(
+			final String header =
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>		" +
 				"<InsertObservation		" +
 					"xmlns=\"http://www.opengis.net/sos/1.0\"	" +
@@ -180,9 +188,9 @@ public abstract class SosXMLDoc {
 						"http://schemas.opengis.net/sampling/1.0.0/sampling.xsd		" +
 						"http://www.opengis.net/om/1.0	" +
 						"http://schemas.opengis.net/om/1.0.0/extensions/observationSpecialization_override.xsd\"	" +
-					"service=\"SOS\" version=\"1.0.0\">		");
+					"service=\"SOS\" version=\"1.0.0\">		";
 					
-			final String sensor =(
+			final String sensor =
 					"<AssignedSensorId>" + observation.getSensorId() + "</AssignedSensorId>" +
 					
 					"<om:CategoryObservation>" +				
@@ -192,9 +200,9 @@ public abstract class SosXMLDoc {
 					          "</gml:TimeInstant>" +
 					     "</om:samplingTime>" +				     
 					     "<om:procedure xlink:href=\"" + observation.getSensorId() + "\"/>" +
-					     "<om:observedProperty xlink:href=\"urn:ogc:def:dataType:OGC:1.1:string\"/>");
+					     "<om:observedProperty xlink:href=\"urn:ogc:def:dataType:OGC:1.1:string\"/>";
 			
-			final String foi =(	     
+			final String foi =     
 					     "<om:featureOfInterest>" +
 					         "<!-- a sampling feature is needed to insert CategoryObservations -->" +
 					         "<sa:SamplingPoint gml:id=\"" + observation.getFoiId() + "\">" +
@@ -206,23 +214,23 @@ public abstract class SosXMLDoc {
 									 "</gml:Point>" +
 					             "</sa:position>" +
 					         "</sa:SamplingPoint>" +
-					     "</om:featureOfInterest>");
+					     "</om:featureOfInterest>";
 			
-		    final String result =(
-					     "<om:result codeSpace=\"\">" + observation.getResult() + "</om:result>");
+		    final String result =
+					     "<om:result codeSpace=\"\">" + observation.getResult() + "</om:result>";
 		    
-			final String footer =(		     
+			final String footer =	     
 					"</om:CategoryObservation>" +
-				"</InsertObservation>");
+				"</InsertObservation>";
 			
 			// Insert Observation Document
 			
-			final String insertObservationXMLDoc = (
+			final String insertObservationXMLDoc =
 					header + 
 					sensor + 
 					foi + 
 					result + 
-					footer);
+					footer;
 			
 			return insertObservationXMLDoc;
 		}
