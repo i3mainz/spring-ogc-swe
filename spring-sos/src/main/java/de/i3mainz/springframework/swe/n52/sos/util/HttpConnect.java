@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
  * try and execute Http Connections
  *
  */
-public abstract class Http_connect {
+public abstract class HttpConnect {
     
     private static final Logger LOG = LoggerFactory
-            .getLogger(Http_connect.class);
+            .getLogger(HttpConnect.class);
     
 	/**
 	 * Erstellung einer Verbindung zu einem Webservice,

@@ -31,7 +31,7 @@ import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
-import de.i3mainz.springframework.swe.n52.sos.util.Http_connect;
+import de.i3mainz.springframework.swe.n52.sos.util.HttpConnect;
 import de.i3mainz.springframework.swe.n52.sos.util.Sos_observation;
 import de.i3mainz.springframework.swe.n52.sos.util.Sos_xml_doc;
 
@@ -232,7 +232,7 @@ public class SOSTemplate extends SOSAccessor implements
 		xml_doc_ins_obs = Sos_xml_doc.insert_observation(ins_obs);
 		LOG.debug(xml_doc_ins_obs);
 		String responserequest;
-		responserequest = Http_connect.excutePost(getConnectionParameter()
+		responserequest = HttpConnect.excutePost(getConnectionParameter()
 				.getUrl(), xml_doc_ins_obs);
 
 		return responserequest;
