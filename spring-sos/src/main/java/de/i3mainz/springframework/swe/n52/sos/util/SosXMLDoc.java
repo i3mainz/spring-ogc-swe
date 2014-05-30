@@ -20,17 +20,17 @@ package de.i3mainz.springframework.swe.n52.sos.util;
  * @author sos_sn
  *
  */
-public abstract class Sos_xml_doc {
+public abstract class SosXMLDoc {
 	
 	/**
 	 * XML Document - SOS Register Sensor
 	 * @param sensor
 	 * @return
 	 */
-	public static String register_sensor(Sos_sensor sensor){
+	public static String registerSensor(SosSensor sensor){
 			
 			// Important: tabspace (behind >  and  before "+)  --> Example: UTF-8\"?>	"+
-			String xml_register_sensor_head = (
+			final String header = (
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>	"+
 				"<RegisterSensor service=\"SOS\" version=\"1.0.0\"	"+
 					"xmlns=\"http://www.opengis.net/sos/1.0\"	"+
@@ -53,19 +53,19 @@ public abstract class Sos_xml_doc {
 					"<sml:member>"+
 						"<sml:System xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">");
 						
-			String xml_register_sensor_IdentifierList= (				
+			final String identifierList= (				
 							  "<!--sml:identification element must contain the ID of the sensor-->"+
 						     "<sml:identification>"+
 						          "<sml:IdentifierList>"+
 						               "<sml:identifier>"+
 						                    "<sml:Term definition=\"urn:ogc:def:identifier:OGC:uniqueID\">"+
-						                         "<sml:value>"+ sensor.sensor_id +"</sml:value>"+
+						                         "<sml:value>"+ sensor.getSensorId() +"</sml:value>"+
 						                    "</sml:Term>"+
 						               "</sml:identifier>"+
 						          "</sml:IdentifierList>"+
 						     "</sml:identification>");
 			
-			String xml_register_sensor_position= (
+			final String position= (
 						     "<!-- last measured position of sensor -->"+
 						     "<sml:position name=\"sensorPosition\">"+
 						          "<swe:Position referenceFrame=\"urn:ogc:def:crs:EPSG::4326\">"+
@@ -94,7 +94,7 @@ public abstract class Sos_xml_doc {
 						          "</swe:Position>"+
 						     "</sml:position>");
 			
-			String xml_register_sensor_phenomena= (
+			final String phenomena= (
 						
 						     "<!-- list containing the input phenomena for this sensor system -->"+
 						     "<sml:inputs>"+
@@ -112,8 +112,8 @@ public abstract class Sos_xml_doc {
 						                     "<swe:Category definition=\"urn:ogc:def:dataType:OGC:1.1:string\">"+
 						                     	"<gml:metaDataProperty>"+
 													"<offering>"+
-														"<id>"+ sensor.offering_id +"</id>"+
-														"<name>"+ sensor.offering_name +"</name>"+
+														"<id>"+ sensor.getOfferingId() +"</id>"+
+														"<name>"+ sensor.getOfferingName() +"</name>"+
 													"</offering>"+
 												"</gml:metaDataProperty>"+
 						                     "</swe:Category>"+
@@ -121,7 +121,7 @@ public abstract class Sos_xml_doc {
 						           "</sml:OutputList>"+
 						      "</sml:outputs>");
 			
-			String xml_register_sensor_foot= (					      
+			final String footer= (					      
 						"</sml:System>"+
 					"</sml:member>"+
 					"</sml:SensorML>"+
@@ -142,14 +142,14 @@ public abstract class Sos_xml_doc {
 			
 			//Sensor XML Document
 			
-			String xml_reg_sensor_doc = (
-					xml_register_sensor_head + 
-					xml_register_sensor_IdentifierList + 
-					xml_register_sensor_position + 
-					xml_register_sensor_phenomena + 
-					xml_register_sensor_foot); 
+			final String xmlRequestDoc = (
+					header + 
+					identifierList + 
+					position + 
+					phenomena + 
+					footer); 
 		
-			return xml_reg_sensor_doc;
+			return xmlRequestDoc;
 		}
 	
 	
@@ -158,9 +158,9 @@ public abstract class Sos_xml_doc {
 		 * @param observation
 		 * @return
 		 */
-		public static String insert_observation (Sos_observation observation){
+		public static String insertObservation (SosObservation observation){
 			
-			String xml_insert_observation_head =(
+			final String header =(
 				"<?xml version=\"1.0\" encoding=\"UTF-8\"?>		" +
 				"<InsertObservation		" +
 					"xmlns=\"http://www.opengis.net/sos/1.0\"	" +
@@ -182,49 +182,49 @@ public abstract class Sos_xml_doc {
 						"http://schemas.opengis.net/om/1.0.0/extensions/observationSpecialization_override.xsd\"	" +
 					"service=\"SOS\" version=\"1.0.0\">		");
 					
-			String xml_insert_observation_sensor =(
-					"<AssignedSensorId>" + observation.get_sensor_id() + "</AssignedSensorId>" +
+			final String sensor =(
+					"<AssignedSensorId>" + observation.getSensorId() + "</AssignedSensorId>" +
 					
 					"<om:CategoryObservation>" +				
 					     "<om:samplingTime>" +
 					          "<gml:TimeInstant>" +
-					               "<gml:timePosition>" + observation.get_gml_time_position()  + "</gml:timePosition>" +
+					               "<gml:timePosition>" + observation.getTimePostion()  + "</gml:timePosition>" +
 					          "</gml:TimeInstant>" +
 					     "</om:samplingTime>" +				     
-					     "<om:procedure xlink:href=\"" + observation.get_sensor_id() + "\"/>" +
+					     "<om:procedure xlink:href=\"" + observation.getSensorId() + "\"/>" +
 					     "<om:observedProperty xlink:href=\"urn:ogc:def:dataType:OGC:1.1:string\"/>");
 			
-			String xml_insert_observation_foi =(	     
+			final String foi =(	     
 					     "<om:featureOfInterest>" +
 					         "<!-- a sampling feature is needed to insert CategoryObservations -->" +
-					         "<sa:SamplingPoint gml:id=\"" + observation.get_foi_gml_id() + "\">" +
-					             "<gml:name>" + observation.get_foi_gml_name() + "</gml:name>" +
+					         "<sa:SamplingPoint gml:id=\"" + observation.getFoiId() + "\">" +
+					             "<gml:name>" + observation.getFoiName() + "</gml:name>" +
 					             "<sa:sampledFeature xlink:href=\"\"/>" +
 					             "<sa:position>" +
 					                 "<gml:Point>" +
-					                     "<gml:pos srsName=\"urn:ogc:def:crs:EPSG::4326\">" + observation.get_foi_gml_position() + "</gml:pos>" +
+					                     "<gml:pos srsName=\"urn:ogc:def:crs:EPSG::4326\">" + observation.getFoiPosition() + "</gml:pos>" +
 									 "</gml:Point>" +
 					             "</sa:position>" +
 					         "</sa:SamplingPoint>" +
 					     "</om:featureOfInterest>");
 			
-		    String xml_insert_observation_result =(
-					     "<om:result codeSpace=\"\">" + observation.get_result() + "</om:result>");
+		    final String result =(
+					     "<om:result codeSpace=\"\">" + observation.getResult() + "</om:result>");
 		    
-			String xml_insert_observation_foot =(		     
+			final String footer =(		     
 					"</om:CategoryObservation>" +
 				"</InsertObservation>");
 			
 			// Insert Observation Document
 			
-			String xml_insert_observation_doc = (
-					xml_insert_observation_head + 
-					xml_insert_observation_sensor + 
-					xml_insert_observation_foi + 
-					xml_insert_observation_result + 
-					xml_insert_observation_foot);
+			final String insertObservationXMLDoc = (
+					header + 
+					sensor + 
+					foi + 
+					result + 
+					footer);
 			
-			return xml_insert_observation_doc;
+			return insertObservationXMLDoc;
 		}
 
 }

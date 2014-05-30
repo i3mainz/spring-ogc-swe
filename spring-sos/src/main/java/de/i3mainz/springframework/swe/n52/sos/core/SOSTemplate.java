@@ -32,8 +32,8 @@ import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
 import de.i3mainz.springframework.swe.n52.sos.util.HttpConnect;
-import de.i3mainz.springframework.swe.n52.sos.util.Sos_observation;
-import de.i3mainz.springframework.swe.n52.sos.util.Sos_xml_doc;
+import de.i3mainz.springframework.swe.n52.sos.util.SosObservation;
+import de.i3mainz.springframework.swe.n52.sos.util.SosXMLDoc;
 
 public class SOSTemplate extends SOSAccessor implements
 		SensorObservationServiceOperations {
@@ -224,12 +224,12 @@ public class SOSTemplate extends SOSAccessor implements
 	public String insertObservation(String sensorId, FeatureOfInterest foi,
 			Observation observation) throws IOException {
 
-		Sos_observation ins_obs = new Sos_observation();
+		SosObservation ins_obs = new SosObservation();
 		String xml_doc_ins_obs = "";
-		ins_obs.set_obs(sensorId, observation.getTimeAsSTring(), foi.getId(),
+		ins_obs.setObservation(sensorId, observation.getTimeAsSTring(), foi.getId(),
 				foi.getName(), foi.getPosition(), observation.getValue()
 						.toString());
-		xml_doc_ins_obs = Sos_xml_doc.insert_observation(ins_obs);
+		xml_doc_ins_obs = SosXMLDoc.insertObservation(ins_obs);
 		LOG.debug(xml_doc_ins_obs);
 		String responserequest;
 		responserequest = HttpConnect.excutePost(getConnectionParameter()
