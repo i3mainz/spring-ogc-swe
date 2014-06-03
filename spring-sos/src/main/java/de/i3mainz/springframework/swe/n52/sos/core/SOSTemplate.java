@@ -5,10 +5,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import net.opengis.sos.x10.RegisterSensorResponseDocument;
-import net.opengis.swes.x20.InsertSensorResponseDocument;
-
-import org.apache.xmlbeans.XmlException;
 import org.n52.oxf.OXFException;
 import org.n52.oxf.adapter.OperationResult;
 import org.n52.oxf.ows.ExceptionReport;
@@ -16,25 +12,19 @@ import org.n52.oxf.ows.OWSException;
 import org.n52.oxf.ows.OwsExceptionCode;
 import org.n52.oxf.ows.ServiceDescriptor;
 import org.n52.oxf.ows.capabilities.OperationsMetadata;
-import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
 import org.n52.oxf.sos.adapter.SOSAdapter;
-import org.n52.oxf.sos.adapter.wrapper.builder.GetFeatureOfInterestParameterBuilder_v100;
-import org.n52.oxf.sos.adapter.wrapper.builder.GetObservationParameterBuilder_v100;
-import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
-import org.n52.oxf.sos.request.v200.InsertSensorParameters;
 import org.slf4j.Logger;
 
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
+import de.i3mainz.springframework.swe.n52.sos.service.versions.v100.SOSServiceV100;
+import de.i3mainz.springframework.swe.n52.sos.service.versions.v200.SOSServiceV200;
 import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
-import de.i3mainz.springframework.swe.n52.sos.util.HttpConnect;
-import de.i3mainz.springframework.swe.n52.sos.util.SosObservation;
-import de.i3mainz.springframework.swe.n52.sos.util.SosXMLDoc;
 
 public class SOSTemplate extends SOSAccessor implements
         SensorObservationServiceOperations {
-    
+
     private static final Logger LOG = getLog();
 
     /*
@@ -45,7 +35,7 @@ public class SOSTemplate extends SOSAccessor implements
      */
     @Override
     public ServiceDescriptor getCapabilities() {
-        return getSosWrapper().getServiceDescriptor();
+        return getService().getCapabilities();
     }
 
     /*
@@ -56,7 +46,7 @@ public class SOSTemplate extends SOSAccessor implements
      */
     @Override
     public boolean isSOSAvailable() {
-        return getSosWrapper().getServiceDescriptor() != null;
+        return getService().getCapabilities() != null;
     }
 
     /*
@@ -68,14 +58,14 @@ public class SOSTemplate extends SOSAccessor implements
     @Override
     public boolean isSOSTransactional() {
         LOG.trace("isTransactional()");
-        if (getSosWrapper().getServiceDescriptor() == null) {
+        if (getService().getCapabilities() == null) {
             LOG.error(String.format(
                     "Service descriptor not available for SOS '%s'",
                     getConnectionParameter().getUrl()));
             return false;
         }
-        final OperationsMetadata opMeta = getSosWrapper()
-                .getServiceDescriptor().getOperationsMetadata();
+        final OperationsMetadata opMeta = getService().getCapabilities()
+                .getOperationsMetadata();
         LOG.debug(String.format("OperationsMetadata found: %s", opMeta));
         // check for RegisterSensor and InsertObservationOperation
         // TODO implement version specific
@@ -107,34 +97,9 @@ public class SOSTemplate extends SOSAccessor implements
     public String registerSensor(final Sensor rs) {
         try {
             if (VERSION100.equals(getConnectionParameter().getVersion())) {
-                LOG.trace("registerSensor()");
-                final RegisterSensorParameters regSensorParameter = createRegisterSensorParametersFromRS(rs);
-                final OperationResult opResult = getSosWrapper()
-                        .doRegisterSensor(regSensorParameter);
-                final RegisterSensorResponseDocument response = RegisterSensorResponseDocument.Factory
-                        .parse(opResult.getIncomingResultAsStream());
-                LOG.debug("RegisterSensorResponse parsed");
-                return response.getRegisterSensorResponse()
-                        .getAssignedSensorId();
+                ((SOSServiceV100) getService()).registerSensor(rs);
             } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-                LOG.trace("insertSensor()");
-                final InsertSensorParameters insSensorParams = createInsertSensorParametersFromRS(rs);
-                if (getSosBinding() != null) {
-                    insSensorParams.addParameterValue(
-                            ISOSRequestBuilder.BINDING, getSosBinding().name());
-                }
-                final OperationResult opResult = getSosWrapper()
-                        .doInsertSensor(insSensorParams);
-                final InsertSensorResponseDocument response = InsertSensorResponseDocument.Factory
-                        .parse(opResult.getIncomingResultAsStream());
-                LOG.debug("InsertSensorResponse parsed");
-                getOfferings().put(
-                        response.getInsertSensorResponse()
-                                .getAssignedProcedure(),
-                        response.getInsertSensorResponse()
-                                .getAssignedOffering());
-                return response.getInsertSensorResponse()
-                        .getAssignedProcedure();
+                ((SOSServiceV200) getService()).insertSensor(rs);
             }
         } catch (final ExceptionReport e) {
             // Handle already registered sensor case here (happens when the
@@ -165,7 +130,7 @@ public class SOSTemplate extends SOSAccessor implements
                                 .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
                                 && string
                                         .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                            getOfferings().put(rs.getId(),
+                            ((SOSServiceV200)getService()).getOfferings().put(rs.getId(),
                                     rs.getOffering().getId());
                             return rs.getId();
                         }
@@ -174,18 +139,6 @@ public class SOSTemplate extends SOSAccessor implements
 
             }
             LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-        } catch (final OXFException e) {
-            // TODO Auto-generated catch block generated on 21.06.2012 around
-            // 14:53:40
-            LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-        } catch (final XmlException e) {
-            // TODO Auto-generated catch block generated on 21.06.2012 around
-            // 14:53:54
-            LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block generated on 21.06.2012 around
-            // 14:53:54
-            LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
         }
         return null;
     }
@@ -193,142 +146,18 @@ public class SOSTemplate extends SOSAccessor implements
     @Override
     public String insertObservation(String sensorId, FeatureOfInterest foi,
             Observation observation) throws IOException {
-
-        SosObservation insertObsertion = new SosObservation();
-        String insertObservationXMLDoc = "";
-        insertObsertion.setObservation(sensorId, observation.getTimeAsSTring(), foi
-                .getId(), foi.getName(), foi.getPosition(), observation
-                .getValue().toString());
-        insertObservationXMLDoc = SosXMLDoc.insertObservation(insertObsertion);
-        LOG.debug(insertObservationXMLDoc);
-        String responserequest;
-        responserequest = HttpConnect.excutePost(getConnectionParameter()
-                .getUrl(), insertObservationXMLDoc);
-
-        return responserequest;
-
+        return getService().insertObservation(sensorId, foi, observation);
     }
-
-    // /*
-    // * (non-Javadoc)
-    // *
-    // * @see de.i3mainz.springframework.ows.n52.sos.core.
-    // * SensorObservationServiceOperations
-    // * #insertObservation(org.n52.sos.importer.
-    // * feeder.model.requests.InsertObservation)
-    // */
-    // @Override
-    // public String insertObservation(final String sensorId,
-    // final FeatureOfInterest foi, final Observation observation)
-    // throws IOException {
-    // LOG.trace("insertObservation()");
-    // OperationResult opResult = null;
-    // org.n52.oxf.sos.request.InsertObservationParameters parameters = null;
-    //
-    // try {
-    // parameters = createParameterAssemblyFromIO(sensorId, foi,
-    // observation);
-    // try {
-    // LOG.debug("\n\nBEFORE OXF - doOperation \"InsertObservation\"\n\n");
-    // opResult = getSosWrapper().doInsertObservation(parameters);
-    // LOG.debug("\n\nAFTER OXF - doOperation \"InsertObservation\"\n\n");
-    // if (getConnectionParameter().getVersion().equals("1.0.0")) {
-    // try {
-    // final InsertObservationResponse response =
-    // net.opengis.sos.x10.InsertObservationResponseDocument.Factory
-    // .parse(opResult.getIncomingResultAsStream())
-    // .getInsertObservationResponse();
-    // LOG.debug(String
-    // .format("Observation inserted succesfully. Returned id: %s",
-    // response.getAssignedObservationId()));
-    // return response.getAssignedObservationId();
-    // } catch (final XmlException e) {
-    // LOG.error(
-    // String.format("Exception thrown: %s",
-    // e.getMessage()), e);
-    // } catch (final IOException e) {
-    // LOG.error(
-    // String.format("Exception thrown: %s",
-    // e.getMessage()), e);
-    // }
-    // } else if (getConnectionParameter().getVersion()
-    // .equals("2.0.0")) {
-    // try {
-    // net.opengis.sos.x20.InsertObservationResponseDocument.Factory
-    // .parse(opResult.getIncomingResultAsStream())
-    // .getInsertObservationResponse();
-    // LOG.debug("Observation inserted successfully.");
-    // return "SOS 2.0 InsertObservation doesn't return the assigned id";
-    // } catch (final XmlException e) {
-    // LOG.error("Exception thrown: {}", e.getMessage(), e);
-    // }
-    // }
-    // } catch (final ExceptionReport e) {
-    // final Iterator<OWSException> iter = e.getExceptionsIterator();
-    // StringBuffer buf = new StringBuffer();
-    // while (iter.hasNext()) {
-    // final OWSException owsEx = iter.next();
-    // // check for observation already contained exception
-    // if (owsEx
-    // .getExceptionCode()
-    // .equals(Configuration.SOS_EXCEPTION_CODE_NO_APPLICABLE_CODE)
-    // && owsEx.getExceptionTexts().length > 0
-    // && (owsEx.getExceptionTexts()[0]
-    // .indexOf(Configuration.SOS_EXCEPTION_OBSERVATION_DUPLICATE_CONSTRAINT) >
-    // -1
-    // || owsEx.getExceptionTexts()[0]
-    // .indexOf(Configuration.SOS_EXCEPTION_OBSERVATION_ALREADY_CONTAINED) > -1
-    // || owsEx
-    // .getExceptionTexts()[0]
-    // .indexOf(Configuration.SOS_200_DUPLICATE_OBSERVATION_CONSTRAINT) > -1)) {
-    // return Configuration.SOS_OBSERVATION_ALREADY_CONTAINED;
-    // }
-    // buf = buf.append(String.format(
-    // "ExceptionCode: '%s' because of '%s'\n",
-    // owsEx.getExceptionCode(),
-    // Arrays.toString(owsEx.getExceptionTexts())));
-    // }
-    // LOG.error(String.format("Exception thrown: %s\n%s",
-    // e.getMessage(), buf.toString()));
-    // LOG.debug(e.getMessage(), e);
-    // }
-    //
-    // } catch (final OXFException e) {
-    // LOG.error(
-    // String.format("Problem with OXF. Exception thrown: %s",
-    // e.getMessage()), e);
-    // }
-    // return null;
-    // }
 
     public OperationResult getFeatureOfInterest(String foiID)
             throws OXFException, ExceptionReport {
-        if (VERSION100.equals(getConnectionParameter().getVersion())) {
-            GetFeatureOfInterestParameterBuilder_v100 builder = new GetFeatureOfInterestParameterBuilder_v100(
-                    foiID, ISOSRequestBuilder.GET_FOI_ID_PARAMETER);
-            return getSosWrapper().doGetFeatureOfInterest(builder);
-        } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-            throw new OXFException("Version 2.0.0 is not supported yet!");
-        }
-        return null;
+        return getService().getFeatureOfInterest(foiID);
     }
 
     public OperationResult getObservation(String offering,
             List<String> observedProperties) throws OXFException,
             ExceptionReport {
-        if (VERSION100.equals(getConnectionParameter().getVersion())) {
-            GetObservationParameterBuilder_v100 builder = new GetObservationParameterBuilder_v100(
-                    offering, observedProperties.get(0),
-                    "text/xml;subtype=\"om/1.0.0\"");
-            for (Iterator<String> propertiesItr = observedProperties
-                    .listIterator(1); propertiesItr.hasNext();) {
-                builder.addObservedProperty(propertiesItr.next());
-            }
-            return getSosWrapper().doGetObservation(builder);
-        } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-            throw new OXFException("Version 2.0.0 is not supported yet!");
-        }
-        return null;
+        return getService().getObservation(offering, observedProperties);
     }
 
 }

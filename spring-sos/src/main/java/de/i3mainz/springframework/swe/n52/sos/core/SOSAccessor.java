@@ -4,50 +4,33 @@ package de.i3mainz.springframework.swe.n52.sos.core;
 //import static org.n52.sos.importer.feeder.Configuration.SOS_OBSERVATION_TYPE_COUNT;
 //import static org.n52.sos.importer.feeder.Configuration.SOS_OBSERVATION_TYPE_TEXT;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import org.apache.xmlbeans.XmlException;
+import org.apache.commons.lang.NotImplementedException;
 import org.n52.oxf.OXFException;
-import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
-import org.n52.oxf.sos.adapter.ISOSRequestBuilder.Binding;
-import org.n52.oxf.sos.adapter.wrapper.SOSWrapper;
-import org.n52.oxf.sos.adapter.wrapper.SosWrapperFactory;
-import org.n52.oxf.sos.adapter.wrapper.builder.ObservationTemplateBuilder;
 import org.n52.oxf.sos.observation.ObservationParameters;
 import org.n52.oxf.sos.observation.TextObservationParameters;
-import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
-import org.n52.oxf.sos.request.v200.InsertSensorParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.i3mainz.springframework.ogc.OWSConnectionParameter;
 import de.i3mainz.springframework.ogc.core.OWSAccessor;
+import de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
-import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
+import de.i3mainz.springframework.swe.n52.sos.service.SOSService;
+import de.i3mainz.springframework.swe.n52.sos.service.versions.v100.SOSServiceV100Impl;
+import de.i3mainz.springframework.swe.n52.sos.service.versions.v200.SOSServiceV200Impl;
 import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
-import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
 
 public abstract class SOSAccessor extends OWSAccessor {
 
     private static final Logger LOG = LoggerFactory
             .getLogger(SOSTemplate.class);
-    private static final String SML_101_FORMAT_URI = "http://www.opengis.net/sensorML/1.0.1";
-    private static final String OM_200_SAMPLING_FEATURE = "http://www.opengis.net/def/samplingFeatureType/OGC-OM/2.0/SF_SamplingPoint";
     protected static final String VERSION200 = "2.0.0";
     protected static final String VERSION100 = "1.0.0";
-    private SOSWrapper sosWrapper;
-    private Binding sosBinding;
-    private Map<String, String> offerings;
-    private DescriptionBuilder sensorDescBuilder;
+    private SOSService service;
 
     /**
      * @return the log
@@ -60,119 +43,40 @@ public abstract class SOSAccessor extends OWSAccessor {
     public void setConnectionParameter(
             OWSConnectionParameter owsConnectionParameter) {
         super.setConnectionParameter(owsConnectionParameter);
-        this.sosBinding = ((de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter) getConnectionParameter())
-                .getBinding();
-        // sensorDescBuilder = new DescriptionBuilder();
-        try {
-            this.sosWrapper = SosWrapperFactory.newInstance(
-                    owsConnectionParameter.getUrl(),
-                    owsConnectionParameter.getVersion(), this.sosBinding);
-
-            if (VERSION200.equals(getConnectionParameter().getVersion())) {
-                offerings = new HashMap<String, String>();
-            }
-        } catch (ExceptionReport e1) {
-            LOG.error("SOS-Server throws Exception.", e1);
-        } catch (OXFException e1) {
-            LOG.error("Error while accessing SOS-Service", e1);
+        // this.sosBinding =
+        // ((de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter)
+        // getConnectionParameter())
+        // .getBinding();
+        // // sensorDescBuilder = new DescriptionBuilder();
+        // try {
+        // this.sosWrapper = SosWrapperFactory.newInstance(
+        // owsConnectionParameter.getUrl(),
+        // owsConnectionParameter.getVersion(), this.sosBinding);
+        //
+        // if (VERSION200.equals(getConnectionParameter().getVersion())) {
+        // offerings = new HashMap<String, String>();
+        // }
+        // } catch (ExceptionReport e1) {
+        // LOG.error("SOS-Server throws Exception.", e1);
+        // } catch (OXFException e1) {
+        // LOG.error("Error while accessing SOS-Service", e1);
+        // }
+        if (VERSION100.equals(getConnectionParameter().getVersion())) {
+            this.service = new SOSServiceV100Impl((SOSConnectionParameter) getConnectionParameter());
+        } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
+            this.service = new SOSServiceV200Impl((SOSConnectionParameter) getConnectionParameter());
+        } else {
+            throw new NotImplementedException("Version "
+                    + getConnectionParameter().getVersion()
+                    + "not supported by SOS-Services");
         }
     }
 
     /**
-     * @return the sosWrapper
+     * @return the service
      */
-    protected final SOSWrapper getSosWrapper() {
-        return sosWrapper;
-    }
-
-    /**
-     * @return the sosBinding
-     */
-    protected final Binding getSosBinding() {
-        return sosBinding;
-    }
-
-    protected final Map<String, String> getOfferings() {
-        return offerings;
-    }
-
-    // /**
-    // * @return the sensorDescBuilder
-    // */
-    // protected final DescriptionBuilder getSensorDescBuilder() {
-    // return sensorDescBuilder;
-    // }
-
-    private String getURIForObservationType(final String measuredValueType) {
-        if ("NUMERIC".equals(measuredValueType)) {
-            return "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement";
-        }
-        if ("COUNT".equals(measuredValueType)) {
-            return "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_CountObservation";
-        }
-        if ("BOOLEAN".equals(measuredValueType)) {
-            return "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_TruthObservation";
-        }
-        if ("TEXT".equals(measuredValueType)) {
-            return "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_TextObservation";
-        }
-        final String errorMsg = String.format(
-                "Observation type '%s' not supported!", measuredValueType);
-        LOG.error(errorMsg);
-        throw new IllegalArgumentException(errorMsg);
-    }
-
-    protected RegisterSensorParameters createRegisterSensorParametersFromRS(
-            final Sensor registerSensor) throws OXFException, XmlException,
-            IOException {
-        LOG.trace("createParameterContainterFromRS()");
-        ObservationTemplateBuilder observationTemplate;
-        observationTemplate = ObservationTemplateBuilder
-                .createObservationTemplateBuilderForTypeText();
-        observationTemplate.setDefaultValue(" ");
-
-        return new RegisterSensorParameters(
-                this.sensorDescBuilder.createSML(registerSensor),
-                observationTemplate.generateObservationTemplate());
-    }
-
-    protected InsertSensorParameters createInsertSensorParametersFromRS(
-            final Sensor rs) throws XmlException, IOException {
-        return new InsertSensorParameters(this.sensorDescBuilder.createSML(rs),
-                SML_101_FORMAT_URI, getObservedPropertyURIs(null),
-                Collections.singleton(OM_200_SAMPLING_FEATURE),
-                getObservationTypeURIs(rs));
-    }
-
-    private Collection<String> getObservedPropertyURIs(
-            final Collection<?> observedProperties) {
-        if (observedProperties == null || observedProperties.isEmpty()) {
-            final Collection<String> result = new ArrayList<String>();
-            result.add("urn:ogc:def:dataType:OGC:1.1:string");
-            return result;
-        }
-        final Collection<String> result = new ArrayList<String>(
-                observedProperties.size());
-        // for (final ObservedProperty observedProperty : observedProperties) {
-        // result.add(observedProperty.getUri());
-        // }
-        return result;
-    }
-
-    private Collection<String> getObservationTypeURIs(final Sensor rs) {
-        if (rs == null) {
-            final Set<String> tmp = new HashSet<String>();
-            tmp.add(getURIForObservationType("TEXT"));
-            return tmp;
-        }
-        final Set<String> tmp = new HashSet<String>();
-        // for (final ObservedProperty obsProp : rs.getObservedProperties()) {
-        // final String measuredValueType = rs.getMeasuredValueType(obsProp);
-        // if (measuredValueType != null) {
-        // tmp.add(getURIForObservationType(measuredValueType));
-        // }
-        // }
-        return tmp;
+    protected final SOSService getService() {
+        return service;
     }
 
     protected org.n52.oxf.sos.request.InsertObservationParameters createParameterAssemblyFromIO(
@@ -254,11 +158,6 @@ public abstract class SOSAccessor extends OWSAccessor {
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (VERSION200.equals(getConnectionParameter().getVersion())) {
-            sensorDescBuilder = new DescriptionBuilder(false);
-        } else {
-            sensorDescBuilder = new DescriptionBuilder();
-        }
     }
 
 }

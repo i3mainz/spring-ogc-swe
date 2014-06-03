@@ -9,13 +9,13 @@ import org.n52.oxf.adapter.OperationResult;
 import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.ows.ServiceDescriptor;
 
+import de.i3mainz.springframework.ogc.core.OWSServiceOperations;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 
-public interface SensorObservationServiceOperations {
+public interface SensorObservationServiceOperations extends OWSServiceOperations{
 
-    ServiceDescriptor getCapabilities();
     boolean isSOSAvailable();
     boolean isSOSTransactional();
     <T> String registerSensor(T o, Collection<T> mapper);

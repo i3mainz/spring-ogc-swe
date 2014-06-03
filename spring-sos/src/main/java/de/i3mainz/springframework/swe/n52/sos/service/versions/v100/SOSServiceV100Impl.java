@@ -1,0 +1,110 @@
+/**
+ * 
+ */
+package de.i3mainz.springframework.swe.n52.sos.service.versions.v100;
+
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
+
+import net.opengis.sos.x10.RegisterSensorResponseDocument;
+
+import org.apache.xmlbeans.XmlException;
+import org.n52.oxf.OXFException;
+import org.n52.oxf.adapter.OperationResult;
+import org.n52.oxf.ows.ExceptionReport;
+import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
+import org.n52.oxf.sos.adapter.wrapper.builder.GetFeatureOfInterestParameterBuilder_v100;
+import org.n52.oxf.sos.adapter.wrapper.builder.GetObservationParameterBuilder_v100;
+import org.n52.oxf.sos.adapter.wrapper.builder.ObservationTemplateBuilder;
+import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
+import org.slf4j.Logger;
+
+import de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter;
+import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
+import de.i3mainz.springframework.swe.n52.sos.service.SOSServiceImpl;
+import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
+
+/**
+ * @author nikolai
+ *
+ */
+public class SOSServiceV100Impl extends SOSServiceImpl implements
+        SOSServiceV100 {
+
+    private static final Logger LOG = getLog();
+
+    public SOSServiceV100Impl(SOSConnectionParameter connectionParameter) {
+        super(connectionParameter);
+        this.sensorDescBuilder = new DescriptionBuilder();
+    }
+
+    @Override
+    public OperationResult getFeatureOfInterest(String foiID)
+            throws OXFException, ExceptionReport {
+        GetFeatureOfInterestParameterBuilder_v100 builder = new GetFeatureOfInterestParameterBuilder_v100(
+                foiID, ISOSRequestBuilder.GET_FOI_ID_PARAMETER);
+        return getSosWrapper().doGetFeatureOfInterest(builder);
+    }
+    
+    @Override
+    public OperationResult getObservation(String offering,
+            List<String> observedProperties) throws OXFException,
+            ExceptionReport {
+        GetObservationParameterBuilder_v100 builder = new GetObservationParameterBuilder_v100(
+                offering, observedProperties.get(0),
+                "text/xml;subtype=\"om/1.0.0\"");
+        for (Iterator<String> propertiesItr = observedProperties
+                .listIterator(1); propertiesItr.hasNext();) {
+            builder.addObservedProperty(propertiesItr.next());
+        }
+        return getSosWrapper().doGetObservation(builder);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * de.i3mainz.springframework.swe.n52.sos.service.versions.v100.SOSServiceV100
+     * #registerSensor(de.i3mainz.springframework.swe.n52.sos.model.Sensor)
+     */
+    @Override
+    public String registerSensor(Sensor sensor) throws ExceptionReport {
+        LOG.trace("registerSensor()");
+        RegisterSensorParameters regSensorParameter;
+        try {
+            regSensorParameter = createRegisterSensorParametersFromRS(sensor);
+
+            final OperationResult opResult = getSosWrapper().doRegisterSensor(
+                    regSensorParameter);
+            final RegisterSensorResponseDocument response = RegisterSensorResponseDocument.Factory
+                    .parse(opResult.getIncomingResultAsStream());
+            LOG.debug("RegisterSensorResponse parsed");
+            return response.getRegisterSensorResponse().getAssignedSensorId();
+        } catch (OXFException | XmlException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ExceptionReport e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
+
+    protected RegisterSensorParameters createRegisterSensorParametersFromRS(
+            final Sensor registerSensor) throws OXFException, XmlException,
+            IOException {
+        LOG.trace("createParameterContainterFromRS()");
+        ObservationTemplateBuilder observationTemplate;
+        observationTemplate = ObservationTemplateBuilder
+                .createObservationTemplateBuilderForTypeText();
+        observationTemplate.setDefaultValue(" ");
+
+        return new RegisterSensorParameters(
+                this.sensorDescBuilder.createSML(registerSensor),
+                observationTemplate.generateObservationTemplate());
+    }
+
+}
