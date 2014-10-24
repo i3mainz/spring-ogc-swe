@@ -74,14 +74,11 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements SOSServiceV200
             return response.getInsertSensorResponse()
                     .getAssignedProcedure();
         } catch (XmlException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("XMLExcepion",e);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("IOException",e);
         } catch (OXFException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("OXFException",e);
         }
         
         return null;

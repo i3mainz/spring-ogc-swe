@@ -46,7 +46,7 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
                 foiID, ISOSRequestBuilder.GET_FOI_ID_PARAMETER);
         return getSosWrapper().doGetFeatureOfInterest(builder);
     }
-    
+
     @Override
     public OperationResult getObservation(String offering,
             List<String> observedProperties) throws OXFException,
@@ -74,7 +74,10 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
         RegisterSensorParameters regSensorParameter;
         try {
             regSensorParameter = createRegisterSensorParametersFromRS(sensor);
-
+            LOG.debug(regSensorParameter.getParameterNames().toString());
+            for (String name : regSensorParameter.getParameterNames()) {
+                LOG.debug(regSensorParameter.getAllValues(name).toString());
+            }
             final OperationResult opResult = getSosWrapper().doRegisterSensor(
                     regSensorParameter);
             final RegisterSensorResponseDocument response = RegisterSensorResponseDocument.Factory
@@ -82,11 +85,7 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
             LOG.debug("RegisterSensorResponse parsed");
             return response.getRegisterSensorResponse().getAssignedSensorId();
         } catch (OXFException | XmlException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ExceptionReport e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Exception", e);
         }
 
         return null;
