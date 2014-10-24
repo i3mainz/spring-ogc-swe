@@ -17,9 +17,9 @@ apply plugin: 'idea'
 group = 'de.i3mainz.springframework.ogc.swe'
 
 repositories {
-	maven { 
+	/*maven { 
 		url 'http://mvnrepo.geoinform.fh-mainz.de/artifactory/repo/'
-	}
+	}*/
 	maven { 
 		url 'http://52north.org/maven/repo/snapshots/'
 	}
