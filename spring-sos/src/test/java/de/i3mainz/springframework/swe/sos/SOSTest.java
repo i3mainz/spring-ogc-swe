@@ -58,11 +58,11 @@ public class SOSTest {
 
 	}
 
-	@Test
-	public void testGetFeatureOfInterest() throws Exception {
-		System.out.println(service.getFeatureOfInterest(foi.getId()));
-
-	}
+//	@Test
+//	public void testGetFeatureOfInterest() throws Exception {
+//		System.out.println(service.getFeatureOfInterest(foi.getId()));
+//
+//	}
 
 	@Test
 	public void testSOSGetObservation() throws Exception {
