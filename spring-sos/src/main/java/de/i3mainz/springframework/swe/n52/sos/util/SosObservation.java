@@ -38,7 +38,7 @@ public class SosObservation {
 		
 	public void setObservation(String sensorId, String timePosition, String foiId, String foiName, String foiPosition, String result){
 		this.sensorId = sensorId;
-		this.foiPosition = timePosition;
+		this.timeposition = timePosition;
 		this.foiId = foiId;
 		this.foiName = foiName;
 		this.foiPosition = foiPosition;
