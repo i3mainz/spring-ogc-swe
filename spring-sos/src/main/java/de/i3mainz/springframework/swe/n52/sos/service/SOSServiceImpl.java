@@ -50,6 +50,9 @@ public abstract class SOSServiceImpl implements SOSService {
             LOG.error("SOS-Server throws Exception.", e1);
         } catch (OXFException e1) {
             LOG.error("Error while accessing SOS-Service", e1);
+        } catch (Exception e) {
+           LOG.error("Something is wrong creating sosWrapper.");
+           e.printStackTrace();
         }
         
     }

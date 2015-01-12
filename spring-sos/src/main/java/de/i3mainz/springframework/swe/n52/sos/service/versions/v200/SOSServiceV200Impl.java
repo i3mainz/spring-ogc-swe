@@ -25,7 +25,8 @@ import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.service.SOSServiceImpl;
 import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
 
-public class SOSServiceV200Impl extends SOSServiceImpl implements SOSServiceV200 {
+public class SOSServiceV200Impl extends SOSServiceImpl implements
+        SOSServiceV200 {
 
     private static final Logger LOG = getLog();
     private static final String SML_101_FORMAT_URI = "http://www.opengis.net/sensorML/1.0.1";
@@ -37,54 +38,53 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements SOSServiceV200
         offerings = new HashMap<String, String>();
         this.sensorDescBuilder = new DescriptionBuilder(false);
     }
-    
 
     @Override
-    public OperationResult getFeatureOfInterest(String foiID) throws OXFException, ExceptionReport {
+    public OperationResult getFeatureOfInterest(String foiID)
+            throws OXFException, ExceptionReport {
         throw new OXFException("Version 2.0.0 is not supported yet!");
     }
     
     @Override
-    public OperationResult getObservation(String offering,
+    public OperationResult getObservation(String offering, List<String> sensor,
             List<String> observedProperties) throws OXFException,
             ExceptionReport {
         throw new OXFException("Version 2.0.0 is not supported yet!");
     }
 
+
     @Override
-    public String insertSensor(Sensor sensor) throws ExceptionReport{
+    public String insertSensor(Sensor sensor) throws ExceptionReport {
         LOG.trace("insertSensor()");
         InsertSensorParameters insSensorParams;
         try {
             insSensorParams = createInsertSensorParametersFromRS(sensor);
             if (getSosBinding() != null) {
-                insSensorParams.addParameterValue(
-                        ISOSRequestBuilder.BINDING, getSosBinding().name());
+                insSensorParams.addParameterValue(ISOSRequestBuilder.BINDING,
+                        getSosBinding().name());
             }
-            final OperationResult opResult = getSosWrapper()
-                    .doInsertSensor(insSensorParams);
+            LOG.info("SOSWrapper is null?: " + (getSosWrapper() == null));
+            final OperationResult opResult = getSosWrapper().doInsertSensor(
+                    insSensorParams);
             final InsertSensorResponseDocument response = InsertSensorResponseDocument.Factory
                     .parse(opResult.getIncomingResultAsStream());
             LOG.debug("InsertSensorResponse parsed");
-            this.offerings.put(
-                    response.getInsertSensorResponse()
-                            .getAssignedProcedure(),
-                    response.getInsertSensorResponse()
-                            .getAssignedOffering());
-            return response.getInsertSensorResponse()
-                    .getAssignedProcedure();
+            this.offerings.put(response.getInsertSensorResponse()
+                    .getAssignedProcedure(), response.getInsertSensorResponse()
+                    .getAssignedOffering());
+            return response.getInsertSensorResponse().getAssignedProcedure();
         } catch (XmlException e) {
-            LOG.error("XMLExcepion",e);
+            LOG.error("XMLExcepion", e);
         } catch (IOException e) {
-            LOG.error("IOException",e);
+            LOG.error("IOException", e);
         } catch (OXFException e) {
-            LOG.error("OXFException",e);
+            LOG.error("OXFException", e);
         }
-        
+
         return null;
-        
+
     }
-    
+
     private InsertSensorParameters createInsertSensorParametersFromRS(
             final Sensor rs) throws XmlException, IOException {
         return new InsertSensorParameters(this.sensorDescBuilder.createSML(rs),
@@ -92,8 +92,7 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements SOSServiceV200
                 Collections.singleton(OM_200_SAMPLING_FEATURE),
                 getObservationTypeURIs(rs));
     }
-    
-    
+
     // /**
     // * @return the sensorDescBuilder
     // */
@@ -148,9 +147,10 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements SOSServiceV200
         // tmp.add(getURIForObservationType(measuredValueType));
         // }
         // }
+        tmp.add(getURIForObservationType("TEXT"));
         return tmp;
     }
-    
+
     @Override
     public Map<String, String> getOfferings() {
         return this.offerings;

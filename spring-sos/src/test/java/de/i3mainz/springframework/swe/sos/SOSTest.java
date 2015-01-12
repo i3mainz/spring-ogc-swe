@@ -1,11 +1,10 @@
 package de.i3mainz.springframework.swe.sos;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+
+import javax.annotation.Resource;
 
 import junit.framework.Assert;
 
@@ -24,55 +23,65 @@ import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class SOSTest {
 
-	@Autowired
-	public SOSService service;
-	@Autowired
-	public Sensor sensor;
-	@Autowired
-	public FeatureOfInterest foi;
-	@Autowired
-	public Observation observation;
-	//@Autowired
-	public List<String> observedProperties;
+    @Autowired
+    public SOSService service;
+    @Autowired
+    public Sensor sensor;
+    @Autowired
+    public FeatureOfInterest foi;
+    @Autowired
+    public Observation observation;
+    @Resource(name = "observedProperties")
+    public List<String> observedProperties;
+    @Resource(name = "sensors")
+    public List<String> sensors;
 
-	@Test
-	public void testSimpleProperties() throws Exception {
-		assertNotNull(service);
-	}
+    @Test
+    public void testSimpleProperties() throws Exception {
+        assertNotNull(service);
+    }
 
-	@Test
-	public void testSOS() throws Exception {
-		assertEquals("1.0.0", service.getSosVersion());
-		Assert.assertTrue(service.isSOSAvailable());
-		Assert.assertTrue(service.isSOSTransactional());
-	}
+    @Test
+    public void testSOS() throws Exception {
+        Assert.assertTrue(service.isSOSAvailable());
+        // Assert.assertTrue(service.isSOSTransactional());
+    }
 
-	@Test
-	public void testRegisterSensor() throws Exception {
-		System.out.println(service.insertSensor(sensor));
-	}
+    @Test
+    public void testRegisterSensor() throws Exception {
+        System.out.println(service.insertSensor(sensor));
+    }
 
-	@Test
-	public void testInsertObservation() throws Exception {
-		System.out.println(service.insertObservation(sensor, foi, observation));
+    @Test
+    public void testInsertObservation() throws Exception {
+        System.out.println(service.insertObservation(sensor, foi, observation));
 
-	}
+    }
 
-//	@Test
-//	public void testGetFeatureOfInterest() throws Exception {
-//		System.out.println(service.getFeatureOfInterest(foi.getId()));
-//
-//	}
+    @Test
+    public void testGetFeatureOfInterest() throws Exception {
+        System.out.println(service.getFeatureOfInterest(foi.getId()));
 
-	@Test
-	public void testSOSGetObservation() throws Exception {
-		// assertNotNull(service.getObservation());
-		observedProperties = new ArrayList<String>();
-		observedProperties.add("urn:ogc:def:dataType:OGC:1.1:string");
-		System.out.println(service.getObservation(sensor.getOffering().getId(),observedProperties));
-	}
-	// @Test
-	// public void testSOSInsertSensor() throws Exception {
-	// service.insertSensor();
-	// }
+    }
+
+    @Test
+    public void testSOSGetObservation() throws Exception {
+        // assertNotNull(service.getObservation());
+        System.out.println("GET-Observation-RESPONSE-Featurelist for ID "
+                + sensor.getOffering().getId()
+                + ": "
+                + service.getObservation(sensor.getOffering().getId(),null,
+                        observedProperties));
+    }
+
+    @Test
+    public void testSOSGetObservationOfSensor() throws Exception {
+        // assertNotNull(service.getObservation());
+        service.getObservation(sensor.getOffering().getId(), sensors,
+                observedProperties);
+    }
+    // @Test
+    // public void testSOSInsertSensor() throws Exception {
+    // service.insertSensor();
+    // }
 }

@@ -26,7 +26,7 @@ public interface SOSService {
     OperationResult getFeatureOfInterest(String foiID) throws OXFException,
             ExceptionReport;
 
-    OperationResult getObservation(String offering,
+    OperationResult getObservation(String offering, List<String> sensor,
             List<String> observedProperties) throws OXFException,
             ExceptionReport;
     

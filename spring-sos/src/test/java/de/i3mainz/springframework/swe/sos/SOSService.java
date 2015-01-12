@@ -12,26 +12,27 @@ import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 
 public interface SOSService {
 
-	String getSosVersion();
+    String getSosVersion();
 
-	// int getObservation();
-	// void insertSensor();
+    // int getObservation();
+    // void insertSensor();
 
-	// String registerSensor(String id, String offeringId, String offeringName);
+    // String registerSensor(String id, String offeringId, String offeringName);
 
-	boolean isSOSAvailable();
+    boolean isSOSAvailable();
 
-	boolean isSOSTransactional();
+    boolean isSOSTransactional();
 
-	String insertSensor(Sensor sensor);
+    String insertSensor(Sensor sensor);
 
-	String insertObservation(Sensor sensor, FeatureOfInterest foi,
-			Observation observation) throws IOException;
+    String insertObservation(Sensor sensor, FeatureOfInterest foi,
+            Observation observation) throws IOException;
 
-	String getFeatureOfInterest(String foiID) throws OXFException,
-			ExceptionReport;
-
-	String getObservation(String offeringId, List<String> observedProperties)
-			throws OXFException, ExceptionReport;
+    String getFeatureOfInterest(String foiID) throws OXFException,
+            ExceptionReport;
+    
+    String getObservation(String offeringId, List<String> sensors,
+            List<String> observedProperties) throws OXFException,
+            ExceptionReport;
 
 }

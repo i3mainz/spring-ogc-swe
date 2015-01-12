@@ -47,16 +47,21 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
         return getSosWrapper().doGetFeatureOfInterest(builder);
     }
 
-    @Override
     public OperationResult getObservation(String offering,
-            List<String> observedProperties) throws OXFException,
-            ExceptionReport {
+            List<String> sensors, List<String> observedProperties)
+            throws OXFException, ExceptionReport {
         GetObservationParameterBuilder_v100 builder = new GetObservationParameterBuilder_v100(
                 offering, observedProperties.get(0),
                 "text/xml;subtype=\"om/1.0.0\"");
         for (Iterator<String> propertiesItr = observedProperties
                 .listIterator(1); propertiesItr.hasNext();) {
             builder.addObservedProperty(propertiesItr.next());
+        }
+        if (sensors != null && !sensors.isEmpty()) {
+            for (Iterator<String> sensorsIterator = sensors.iterator(); sensorsIterator
+                    .hasNext();) {
+                builder.addProcedure(sensorsIterator.next());
+            }
         }
         return getSosWrapper().doGetObservation(builder);
     }
