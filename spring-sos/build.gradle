@@ -2,7 +2,7 @@ description = 'Spring OGC SOS'
 
 buildscript {
 	repositories {
-		maven { url 'https://repo.springsource.org/plugins-snapshot' }
+		maven { url 'http://repo.springsource.org/plugins-snapshot' }
 	}
 	dependencies {
 		classpath 'org.springframework.build.gradle:docbook-reference-plugin:0.2.8'
