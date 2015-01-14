@@ -77,8 +77,8 @@ public class SOSTest {
     @Test
     public void testSOSGetObservationOfSensor() throws Exception {
         // assertNotNull(service.getObservation());
-        service.getObservation(sensor.getOffering().getId(), sensors,
-                observedProperties);
+        System.out.println(service.getObservation(sensor.getOffering().getId(), sensors,
+                observedProperties));
     }
     // @Test
     // public void testSOSInsertSensor() throws Exception {

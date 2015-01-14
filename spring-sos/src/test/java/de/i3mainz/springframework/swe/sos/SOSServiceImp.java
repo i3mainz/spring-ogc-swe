@@ -113,7 +113,7 @@ public class SOSServiceImp implements SOSService {
     @Override
     public String getFeatureOfInterest(String foiID) throws OXFException,
             ExceptionReport {
-        
+
         OXFFeatureCollection fois = sos.getFeatureOfInterest(foiID);
         StringBuilder stringBuilder = new StringBuilder();
         for (Iterator<OXFFeature> iterator = fois.iterator(); iterator
@@ -125,8 +125,12 @@ public class SOSServiceImp implements SOSService {
         return stringBuilder.toString();
     }
 
-    /* (non-Javadoc)
-     * @see de.i3mainz.springframework.swe.sos.SOSService#getObservation(java.lang.String, java.util.List, java.util.List)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * de.i3mainz.springframework.swe.sos.SOSService#getObservation(java.lang
+     * .String, java.util.List, java.util.List)
      */
     @Override
     public String getObservation(String offeringId, List<String> sensors,
@@ -139,12 +143,30 @@ public class SOSServiceImp implements SOSService {
         for (Iterator<OXFFeature> iterator = features.iterator(); iterator
                 .hasNext();) {
             OXFFeature feature = iterator.next();
-            stringBuilder.append(feature.toString());
+            stringBuilder.append("Observation: " + feature.getID());
+            stringBuilder.append("; Attributes: ");
+            String[] attributeStrings = feature.getSpecifiedAttributes();
+            for (String attributeName : attributeStrings) {
+                stringBuilder.append(attributeName+": ");
+                if (attributeName.equalsIgnoreCase("featureOfInterest")) {
+                    OXFFeature foi = (OXFFeature) feature
+                            .getAttribute(attributeName);
+                    if (foi.getGeometry() != null) {
+                        stringBuilder.append(foi.getGeometry().toText());
+                    }
+                } else {
+                    stringBuilder.append(feature.getAttribute(attributeName));
+                }
+                stringBuilder.append(", \t\t");
+            }
             stringBuilder.append("; ");
+            if (feature.getGeometry() != null) {
+                stringBuilder.append(feature.getGeometry().toText());
+            }
+            stringBuilder.append("; ");
+            stringBuilder.append(" \n ");
         }
         return stringBuilder.toString();
     }
-    
-    
 
 }
