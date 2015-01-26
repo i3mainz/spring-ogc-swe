@@ -48,8 +48,8 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
     }
 
     public OperationResult getObservation(String offering,
-            List<String> sensors, List<String> observedProperties)
-            throws OXFException, ExceptionReport {
+            List<String> sensors, List<String> observedProperties,
+            String srsName) throws OXFException, ExceptionReport {
         GetObservationParameterBuilder_v100 builder = new GetObservationParameterBuilder_v100(
                 offering, observedProperties.get(0),
                 "text/xml;subtype=\"om/1.0.0\"");
@@ -62,6 +62,9 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
                     .hasNext();) {
                 builder.addProcedure(sensorsIterator.next());
             }
+        }
+        if (srsName != null && !srsName.isEmpty()) {
+            builder.addSrsName(srsName);
         }
         return getSosWrapper().doGetObservation(builder);
     }

@@ -159,10 +159,10 @@ public class SOSTemplate extends SOSAccessor implements
     }
 
     public OXFFeatureCollection getObservation(String offering,
-            List<String> sensors, List<String> observedProperties)
+            List<String> sensors, List<String> observedProperties, String srsName)
             throws OXFException, ExceptionReport {
         OperationResult result = getService().getObservation(offering,
-                sensors, observedProperties);
+                sensors, observedProperties, srsName);
         System.out.println("Sended request: " + result.getSendedRequest());
         SOSObservationStore store = new SOSObservationStore(result);
         return store.unmarshalFeatures();

@@ -134,10 +134,10 @@ public class SOSServiceImp implements SOSService {
      */
     @Override
     public String getObservation(String offeringId, List<String> sensors,
-            List<String> observedProperties) throws OXFException,
-            ExceptionReport {
+            List<String> observedProperties, String srsName)
+            throws OXFException, ExceptionReport {
         OXFFeatureCollection features = sos.getObservation(offeringId, sensors,
-                observedProperties);
+                observedProperties, srsName);
         System.out.println("Anzahl Features: " + features.size());
         StringBuilder stringBuilder = new StringBuilder();
         for (Iterator<OXFFeature> iterator = features.iterator(); iterator
@@ -147,7 +147,7 @@ public class SOSServiceImp implements SOSService {
             stringBuilder.append("; Attributes: ");
             String[] attributeStrings = feature.getSpecifiedAttributes();
             for (String attributeName : attributeStrings) {
-                stringBuilder.append(attributeName+": ");
+                stringBuilder.append(attributeName + ": ");
                 if (attributeName.equalsIgnoreCase("featureOfInterest")) {
                     OXFFeature foi = (OXFFeature) feature
                             .getAttribute(attributeName);

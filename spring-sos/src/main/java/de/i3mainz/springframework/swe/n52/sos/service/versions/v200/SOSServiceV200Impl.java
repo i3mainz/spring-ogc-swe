@@ -47,7 +47,7 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements
     
     @Override
     public OperationResult getObservation(String offering, List<String> sensor,
-            List<String> observedProperties) throws OXFException,
+            List<String> observedProperties, String srsName) throws OXFException,
             ExceptionReport {
         throw new OXFException("Version 2.0.0 is not supported yet!");
     }

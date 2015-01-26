@@ -35,6 +35,6 @@ public interface SensorObservationServiceOperations extends
             ExceptionReport;
 
     OXFFeatureCollection getObservation(String offeringID, List<String> sensors,
-            List<String> observedProperties) throws OXFException,
+            List<String> observedProperties, String srsName) throws OXFException,
             ExceptionReport;
 }

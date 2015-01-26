@@ -32,7 +32,7 @@ public interface SOSService {
             ExceptionReport;
     
     String getObservation(String offeringId, List<String> sensors,
-            List<String> observedProperties) throws OXFException,
+            List<String> observedProperties, String srsName) throws OXFException,
             ExceptionReport;
 
 }

@@ -71,14 +71,14 @@ public class SOSTest {
                 + sensor.getOffering().getId()
                 + ": "
                 + service.getObservation(sensor.getOffering().getId(),null,
-                        observedProperties));
+                        observedProperties,null));
     }
 
     @Test
     public void testSOSGetObservationOfSensor() throws Exception {
         // assertNotNull(service.getObservation());
         System.out.println(service.getObservation(sensor.getOffering().getId(), sensors,
-                observedProperties));
+                observedProperties,"urn:ogc:def:crs:EPSG::3857"));
     }
     // @Test
     // public void testSOSInsertSensor() throws Exception {
