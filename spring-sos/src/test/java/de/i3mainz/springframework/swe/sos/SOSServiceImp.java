@@ -138,7 +138,6 @@ public class SOSServiceImp implements SOSService {
             throws OXFException, ExceptionReport {
         OXFFeatureCollection features = sos.getObservation(offeringId, sensors,
                 observedProperties, srsName);
-        System.out.println("Anzahl Features: " + features.size());
         StringBuilder stringBuilder = new StringBuilder();
         for (Iterator<OXFFeature> iterator = features.iterator(); iterator
                 .hasNext();) {
