@@ -25,19 +25,18 @@ import de.i3mainz.springframework.swe.n52.sos.util.SosXMLDoc;
  *
  */
 public abstract class SOSServiceImpl implements SOSService {
-    
-    private static final Logger LOG = LoggerFactory
-            .getLogger(SOSService.class);
+
+    private static final Logger LOG = LoggerFactory.getLogger(SOSService.class);
 
     private SOSWrapper sosWrapper;
     private Binding sosBinding;
     protected DescriptionBuilder sensorDescBuilder;
     private SOSConnectionParameter connectionParameter;
-    
+
     public SOSServiceImpl(SOSConnectionParameter connectionParameter) {
-        
+
         this.connectionParameter = connectionParameter;
-        
+
         this.sosBinding = this.connectionParameter.getBinding();
         // sensorDescBuilder = new DescriptionBuilder();
         try {
@@ -45,48 +44,54 @@ public abstract class SOSServiceImpl implements SOSService {
                     this.connectionParameter.getUrl(),
                     this.connectionParameter.getVersion(), this.sosBinding);
 
-            
-        } catch (ExceptionReport e1) {
-            LOG.error("SOS-Server throws Exception.", e1);
-        } catch (OXFException e1) {
-            LOG.error("Error while accessing SOS-Service", e1);
+        } catch (ExceptionReport e) {
+            LOG.error("SOS-Server throws Exception.", e);
+        } catch (OXFException e) {
+            LOG.error("Error while accessing SOS-Service", e);
         } catch (Exception e) {
-           LOG.error("Something is wrong creating sosWrapper.");
-           e.printStackTrace();
+            LOG.error("Something is wrong creating sosWrapper.", e);
         }
-        
+
     }
-   
 
-
-    /* (non-Javadoc)
-     * @see de.i3mainz.springframework.swe.n52.sos.service.SOSService#getCapabilities()
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * de.i3mainz.springframework.swe.n52.sos.service.SOSService#getCapabilities
+     * ()
      */
     @Override
     public ServiceDescriptor getCapabilities() {
         return this.sosWrapper.getServiceDescriptor();
     }
 
-    /* (non-Javadoc)
-     * @see de.i3mainz.springframework.swe.n52.sos.service.SOSService#insertObservation(java.lang.String, de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest, de.i3mainz.springframework.swe.n52.sos.model.Observation)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * de.i3mainz.springframework.swe.n52.sos.service.SOSService#insertObservation
+     * (java.lang.String,
+     * de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest,
+     * de.i3mainz.springframework.swe.n52.sos.model.Observation)
      */
     @Override
     public String insertObservation(String sensorId, FeatureOfInterest foi,
             Observation observation) {
         SosObservation insertObsertion = new SosObservation();
         String insertObservationXMLDoc = "";
-        insertObsertion.setObservation(sensorId, observation.getTimeAsSTring(), foi
-                .getId(), foi.getName(), foi.getPosition(), observation
-                .getValue().toString());
+        insertObsertion.setObservation(sensorId, observation.getTimeAsSTring(),
+                foi.getId(), foi.getName(), foi.getPosition(), observation
+                        .getValue().toString());
         insertObservationXMLDoc = SosXMLDoc.insertObservation(insertObsertion);
         LOG.debug(insertObservationXMLDoc);
         String responserequest;
-        responserequest = HttpConnect.excutePost(this.connectionParameter
-                .getUrl(), insertObservationXMLDoc);
+        responserequest = HttpConnect.excutePost(
+                this.connectionParameter.getUrl(), insertObservationXMLDoc);
 
         return responserequest;
     }
-    
+
     // /*
     // * (non-Javadoc)
     // *
@@ -178,29 +183,25 @@ public abstract class SOSServiceImpl implements SOSService {
     // }
     // return null;
     // }
-    
-    
+
     /**
      * @return the log
      */
     protected static final Logger getLog() {
         return LOG;
     }
-    
+
     /**
      * @return the sosWrapper
      */
     protected final SOSWrapper getSosWrapper() {
         return sosWrapper;
     }
-    
+
     /**
      * @return the sosBinding
      */
     protected final Binding getSosBinding() {
         return sosBinding;
     }
-
-
-    
 }

@@ -154,16 +154,17 @@ public class SOSTemplate extends SOSAccessor implements
 
     public OXFFeatureCollection getFeatureOfInterest(String foiID)
             throws OXFException, ExceptionReport {
-        FeatureStore store = new FeatureStore(getService().getFeatureOfInterest(foiID));
+        FeatureStore store = new FeatureStore(getService()
+                .getFeatureOfInterest(foiID));
         return store.unmarshalFeatures();
     }
 
     public OXFFeatureCollection getObservation(String offering,
-            List<String> sensors, List<String> observedProperties, String srsName)
-            throws OXFException, ExceptionReport {
-        OperationResult result = getService().getObservation(offering,
-                sensors, observedProperties, srsName);
-        System.out.println("Sended request: " + result.getSendedRequest());
+            List<String> sensors, List<String> observedProperties,
+            String srsName) throws OXFException, ExceptionReport {
+        OperationResult result = getService().getObservation(offering, sensors,
+                observedProperties, srsName);
+        LOG.debug(("Sended request: \n" + result.getSendedRequest()));
         SOSObservationStore store = new SOSObservationStore(result);
         return store.unmarshalFeatures();
     }

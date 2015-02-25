@@ -26,7 +26,7 @@ import de.i3mainz.springframework.swe.n52.sos.service.SOSServiceImpl;
 import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
 
 /**
- * @author nikolai
+ * @author Nikolai Bock
  *
  */
 public class SOSServiceV100Impl extends SOSServiceImpl implements

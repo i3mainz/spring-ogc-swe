@@ -8,27 +8,27 @@ import de.i3mainz.springframework.ogc.OWSConnectionParameter;
 
 public class SOSConnectionParameter extends OWSConnectionParameter {
 
-	private Binding binding;
+    private Binding binding;
 
-	public SOSConnectionParameter() {
-		super();
-		this.setService(SosUtil.SERVICE_TYPE);
-	}
+    public SOSConnectionParameter() {
+        super();
+        this.setService(SosUtil.SERVICE_TYPE);
+    }
 
-	/**
-	 * @return the binding
-	 */
-	public Binding getBinding() {
-		return binding;
-	}
+    /**
+     * @return the binding
+     */
+    public Binding getBinding() {
+        return binding;
+    }
 
-	/**
-	 * @param binding
-	 *            the binding to set
-	 * @throws OXFException
-	 */
-	public void setBinding(Binding binding) throws OXFException {
-		this.binding = binding;
-	}
+    /**
+     * @param binding
+     *            the binding to set
+     * @throws OXFException
+     */
+    public void setBinding(Binding binding) throws OXFException {
+        this.binding = binding;
+    }
 
 }
