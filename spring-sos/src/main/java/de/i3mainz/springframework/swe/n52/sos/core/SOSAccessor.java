@@ -1,23 +1,15 @@
 package de.i3mainz.springframework.swe.n52.sos.core;
 
-import java.util.Iterator;
-
 import org.apache.commons.lang.NotImplementedException;
-import org.n52.oxf.ows.ExceptionReport;
-import org.n52.oxf.ows.OWSException;
-import org.n52.oxf.ows.OwsExceptionCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.i3mainz.springframework.ogc.OWSConnectionParameter;
 import de.i3mainz.springframework.ogc.core.OWSAccessor;
 import de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter;
-import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.service.SOSService;
 import de.i3mainz.springframework.swe.n52.sos.service.versions.v100.SOSServiceV100Impl;
-import de.i3mainz.springframework.swe.n52.sos.service.versions.v200.SOSServiceV200;
 import de.i3mainz.springframework.swe.n52.sos.service.versions.v200.SOSServiceV200Impl;
-import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
 
 public abstract class SOSAccessor extends OWSAccessor {
 

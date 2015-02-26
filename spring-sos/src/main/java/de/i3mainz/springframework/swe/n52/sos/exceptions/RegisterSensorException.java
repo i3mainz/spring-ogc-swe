@@ -8,8 +8,6 @@ import java.util.Iterator;
 import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.ows.OWSException;
 import org.n52.oxf.ows.OwsExceptionCode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.service.SOSService;
