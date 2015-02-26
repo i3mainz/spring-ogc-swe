@@ -61,25 +61,33 @@ public abstract class SOSAccessor extends OWSAccessor {
     protected String handleExceptionReportException(ExceptionReport e, Sensor rs) {
         // Handle already registered sensor case here (happens when the
         // sensor is registered but not listed in the capabilities):
+        String sID = null;
         final Iterator<OWSException> iter = e.getExceptionsIterator();
         while (iter.hasNext()) {
             final OWSException owsEx = iter.next();
             if (owsEx.getExceptionCode().equals(
                     OwsExceptionCode.NoApplicableCode.name())
-                    && owsEx.getExceptionTexts() != null
-                    && owsEx.getExceptionTexts().length > 0) {
-                return handleNotApplicableCode(owsEx, rs);
+                    && hasTextElements(owsEx)) {
+                sID = handleNotApplicableCode(owsEx, rs);
             } else if (owsEx.getExceptionCode().equals(
                     OwsExceptionCode.InvalidParameterValue.name())
                     && "offeringIdentifier".equals(owsEx.getLocator())
-                    && owsEx.getExceptionTexts() != null
-                    && owsEx.getExceptionTexts().length > 0) {
-               return handleOfferingExists(owsEx, rs);
+                    && hasTextElements(owsEx)) {
+                sID = handleOfferingExists(owsEx, rs);
             }
-
+            if (sID != null) {
+                return sID;
+            }
         }
-        LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-        return null;
+        if (sID == null) {
+            LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+        }
+        return sID;
+    }
+
+    private boolean hasTextElements(OWSException owsEx) {
+        return owsEx.getExceptionTexts() != null
+                && owsEx.getExceptionTexts().length > 0;
     }
 
     private String handleNotApplicableCode(OWSException owsEx, Sensor rs) {
