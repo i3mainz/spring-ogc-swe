@@ -68,9 +68,11 @@ public abstract class SOSAccessor extends OWSAccessor {
         // LOG.error("Error while accessing SOS-Service", e1);
         // }
         if (VERSION100.equals(getConnectionParameter().getVersion())) {
-            this.service = new SOSServiceV100Impl((SOSConnectionParameter) getConnectionParameter());
+            this.service = new SOSServiceV100Impl(
+                    (SOSConnectionParameter) getConnectionParameter());
         } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-            this.service = new SOSServiceV200Impl((SOSConnectionParameter) getConnectionParameter());
+            this.service = new SOSServiceV200Impl(
+                    (SOSConnectionParameter) getConnectionParameter());
         } else {
             throw new NotImplementedException("Version "
                     + getConnectionParameter().getVersion()
@@ -162,7 +164,7 @@ public abstract class SOSAccessor extends OWSAccessor {
         return new org.n52.oxf.sos.request.v100.InsertObservationParameters(
                 obsParameter);
     }
-    
+
     protected String handleExceptionReportException(ExceptionReport e, Sensor rs) {
         // Handle already registered sensor case here (happens when the
         // sensor is registered but not listed in the capabilities):
@@ -173,34 +175,44 @@ public abstract class SOSAccessor extends OWSAccessor {
                     OwsExceptionCode.NoApplicableCode.name())
                     && owsEx.getExceptionTexts() != null
                     && owsEx.getExceptionTexts().length > 0) {
-                for (final String string : owsEx.getExceptionTexts()) {
-                    if (string
-                            .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_START) > -1
-                            && string
-                                    .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                        return rs.getId();
-                    }
-                }
+                handleNotApplicableCode(owsEx, rs);
             } else if (owsEx.getExceptionCode().equals(
                     OwsExceptionCode.InvalidParameterValue.name())
                     && "offeringIdentifier".equals(owsEx.getLocator())
                     && owsEx.getExceptionTexts() != null
                     && owsEx.getExceptionTexts().length > 0) {
-                // handle offering already contained case here
-                for (final String string : owsEx.getExceptionTexts()) {
-                    if (string
-                            .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
-                            && string
-                                    .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                        ((SOSServiceV200) getService()).getOfferings().put(
-                                rs.getId(), rs.getOffering().getId());
-                        return rs.getId();
-                    }
-                }
+                handleOfferingExists(owsEx, rs);
             }
 
         }
         LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+        return null;
+    }
+
+    private String handleNotApplicableCode(OWSException owsEx, Sensor rs) {
+        for (final String string : owsEx.getExceptionTexts()) {
+            if (string
+                    .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_START) > -1
+                    && string
+                            .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_END) > -1) {
+                return rs.getId();
+            }
+        }
+        return null;
+    }
+
+    private String handleOfferingExists(OWSException owsEx, Sensor rs) {
+        // handle offering already contained case here
+        for (final String string : owsEx.getExceptionTexts()) {
+            if (string
+                    .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
+                    && string
+                            .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
+                ((SOSServiceV200) getService()).getOfferings().put(rs.getId(),
+                        rs.getOffering().getId());
+                return rs.getId();
+            }
+        }
         return null;
     }
 
