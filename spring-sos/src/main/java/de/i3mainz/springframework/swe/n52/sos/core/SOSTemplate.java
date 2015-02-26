@@ -16,6 +16,8 @@ import org.n52.oxf.sos.adapter.SOSAdapter;
 import org.n52.oxf.sos.feature.SOSObservationStore;
 import org.slf4j.Logger;
 
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -96,9 +98,9 @@ public class SOSTemplate extends SOSAccessor implements
     public String registerSensor(final Sensor rs) {
         try {
             if (VERSION100.equals(getConnectionParameter().getVersion())) {
-                return ((SOSServiceV100) getService()).registerSensor(rs);
+                 return ((SOSServiceV100) getService()).registerSensor(rs);
             } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-                return ((SOSServiceV200) getService()).insertSensor(rs);
+                 return ((SOSServiceV200) getService()).insertSensor(rs);
             }
         } catch (final ExceptionReport e) {
             return handleExceptionReportException(e, rs);
@@ -113,19 +115,27 @@ public class SOSTemplate extends SOSAccessor implements
     }
 
     public OXFFeatureCollection getFeatureOfInterest(String foiID)
-            throws OXFException, ExceptionReport {
-        FeatureStore store = new FeatureStore(getService()
-                .getFeatureOfInterest(foiID));
-        return store.unmarshalFeatures();
+            throws GetFOIServiceException {
+        try {
+            FeatureStore store = new FeatureStore(getService()
+                    .getFeatureOfInterest(foiID));
+            return store.unmarshalFeatures();
+        } catch (OXFException e) {
+            throw new GetFOIServiceException(e);
+        }
     }
 
     public OXFFeatureCollection getObservation(String offering,
             List<String> sensors, List<String> observedProperties,
-            String srsName) throws OXFException, ExceptionReport {
+            String srsName) throws GetObservationException {
         OperationResult result = getService().getObservation(offering, sensors,
                 observedProperties, srsName);
         LOG.debug("Sended request: \n" + result.getSendedRequest());
-        SOSObservationStore store = new SOSObservationStore(result);
-        return store.unmarshalFeatures();
+        try {
+            SOSObservationStore store = new SOSObservationStore(result);
+            return store.unmarshalFeatures();
+        } catch (OXFException e) {
+            throw new GetObservationException(e);
+        }
     }
 }

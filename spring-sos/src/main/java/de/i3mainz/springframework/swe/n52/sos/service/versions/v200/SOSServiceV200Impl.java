@@ -21,6 +21,8 @@ import org.n52.oxf.sos.request.v200.InsertSensorParameters;
 import org.slf4j.Logger;
 
 import de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.service.SOSServiceImpl;
 import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
@@ -41,17 +43,18 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements
 
     @Override
     public OperationResult getFeatureOfInterest(String foiID)
-            throws OXFException, ExceptionReport {
-        throw new OXFException("Version 2.0.0 is not supported yet!");
-    }
-    
-    @Override
-    public OperationResult getObservation(String offering, List<String> sensor,
-            List<String> observedProperties, String srsName) throws OXFException,
-            ExceptionReport {
-        throw new OXFException("Version 2.0.0 is not supported yet!");
+            throws GetFOIServiceException {
+        throw new GetFOIServiceException(new OXFException(
+                "Version 2.0.0 is not supported yet!"));
     }
 
+    @Override
+    public OperationResult getObservation(String offering, List<String> sensor,
+            List<String> observedProperties, String srsName)
+            throws GetObservationException {
+        throw new GetObservationException(new OXFException(
+                "Version 2.0.0 is not supported yet!"));
+    }
 
     @Override
     public String insertSensor(Sensor sensor) throws ExceptionReport {

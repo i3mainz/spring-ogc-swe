@@ -68,13 +68,13 @@ public abstract class SOSAccessor extends OWSAccessor {
                     OwsExceptionCode.NoApplicableCode.name())
                     && owsEx.getExceptionTexts() != null
                     && owsEx.getExceptionTexts().length > 0) {
-                handleNotApplicableCode(owsEx, rs);
+                return handleNotApplicableCode(owsEx, rs);
             } else if (owsEx.getExceptionCode().equals(
                     OwsExceptionCode.InvalidParameterValue.name())
                     && "offeringIdentifier".equals(owsEx.getLocator())
                     && owsEx.getExceptionTexts() != null
                     && owsEx.getExceptionTexts().length > 0) {
-                handleOfferingExists(owsEx, rs);
+               return handleOfferingExists(owsEx, rs);
             }
 
         }

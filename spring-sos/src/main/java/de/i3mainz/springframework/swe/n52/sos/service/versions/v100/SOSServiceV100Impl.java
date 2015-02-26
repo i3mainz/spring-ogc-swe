@@ -21,6 +21,8 @@ import org.n52.oxf.sos.request.v100.RegisterSensorParameters;
 import org.slf4j.Logger;
 
 import de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.service.SOSServiceImpl;
 import de.i3mainz.springframework.swe.n52.sos.util.DescriptionBuilder;
@@ -41,15 +43,19 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
 
     @Override
     public OperationResult getFeatureOfInterest(String foiID)
-            throws OXFException, ExceptionReport {
+            throws GetFOIServiceException{
         GetFeatureOfInterestParameterBuilder_v100 builder = new GetFeatureOfInterestParameterBuilder_v100(
                 foiID, ISOSRequestBuilder.GET_FOI_ID_PARAMETER);
-        return getSosWrapper().doGetFeatureOfInterest(builder);
+        try {
+            return getSosWrapper().doGetFeatureOfInterest(builder);
+        } catch (OXFException | ExceptionReport e) {
+            throw new GetFOIServiceException(e);
+        }
     }
 
     public OperationResult getObservation(String offering,
             List<String> sensors, List<String> observedProperties,
-            String srsName) throws OXFException, ExceptionReport {
+            String srsName) throws GetObservationException {
         GetObservationParameterBuilder_v100 builder = new GetObservationParameterBuilder_v100(
                 offering, observedProperties.get(0),
                 "text/xml;subtype=\"om/1.0.0\"");
@@ -66,7 +72,11 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
         if (srsName != null && !srsName.isEmpty()) {
             builder.addSrsName(srsName);
         }
-        return getSosWrapper().doGetObservation(builder);
+        try {
+            return getSosWrapper().doGetObservation(builder);
+        } catch (OXFException | ExceptionReport e) {
+            throw new GetObservationException(e);
+        }
     }
 
     /*

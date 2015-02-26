@@ -5,10 +5,8 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 
-import org.n52.oxf.OXFException;
 import org.n52.oxf.feature.OXFFeature;
 import org.n52.oxf.feature.OXFFeatureCollection;
-import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.ows.capabilities.Contents;
 import org.n52.oxf.ows.capabilities.Dataset;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,8 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Component;
 
 import de.i3mainz.springframework.swe.n52.sos.core.SensorObservationServiceOperations;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -111,8 +111,7 @@ public class SOSServiceImp implements SOSService {
     }
 
     @Override
-    public String getFeatureOfInterest(String foiID) throws OXFException,
-            ExceptionReport {
+    public String getFeatureOfInterest(String foiID) throws GetFOIServiceException {
 
         OXFFeatureCollection fois = sos.getFeatureOfInterest(foiID);
         StringBuilder stringBuilder = new StringBuilder();
@@ -135,7 +134,7 @@ public class SOSServiceImp implements SOSService {
     @Override
     public String getObservation(String offeringId, List<String> sensors,
             List<String> observedProperties, String srsName)
-            throws OXFException, ExceptionReport {
+            throws GetObservationException {
         OXFFeatureCollection features = sos.getObservation(offeringId, sensors,
                 observedProperties, srsName);
         StringBuilder stringBuilder = new StringBuilder();
