@@ -46,6 +46,7 @@ public class SOSTest {
     @Test
     public void testSOS() throws Exception {
         Assert.assertTrue(service.isSOSAvailable());
+        Assert.assertTrue(service.isSOSTransactional());
     }
 
     @Test

@@ -70,16 +70,27 @@ public class SOSTemplate extends SOSAccessor implements
         final OperationsMetadata opMeta = getService().getCapabilities()
                 .getOperationsMetadata();
         LOG.debug(String.format("OperationsMetadata found: %s", opMeta));
-        // check for RegisterSensor and InsertObservationOperation
-        // TODO implement version specific
-        if ((opMeta.getOperationByName(SOSAdapter.REGISTER_SENSOR) != null || opMeta
-                .getOperationByName(SOSAdapter.INSERT_SENSOR) != null)
-                && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
-            LOG.debug(String.format(
-                    "Found all required operations: (%s|%s), %s",
-                    SOSAdapter.REGISTER_SENSOR, SOSAdapter.INSERT_SENSOR,
-                    SOSAdapter.INSERT_OBSERVATION));
-            return true;
+        if (VERSION100.equals(getConnectionParameter().getVersion())) {
+            if (opMeta.getOperationByName(SOSAdapter.REGISTER_SENSOR) != null
+                    && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
+                LOG.debug(String.format(
+                        "Found all required operations: %s, %s",
+                        SOSAdapter.REGISTER_SENSOR,
+                        SOSAdapter.INSERT_OBSERVATION));
+                return true;
+            }
+        } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
+            if (opMeta.getOperationByName(SOSAdapter.INSERT_SENSOR) != null
+                    && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
+                LOG.debug(String
+                        .format("Found all required operations: %s, %s",
+                                SOSAdapter.INSERT_SENSOR,
+                                SOSAdapter.INSERT_OBSERVATION));
+                return true;
+            }
+        }else{
+            LOG.error(String.format("SOS-Version not '%s' not available",
+                    getConnectionParameter().getVersion()));
         }
         return false;
     }
@@ -96,18 +107,21 @@ public class SOSTemplate extends SOSAccessor implements
      * SensorObservationServiceOperations
      */
     @Override
-    public String registerSensor(final Sensor rs) throws RegisterSensorException {
+    public String registerSensor(final Sensor rs)
+            throws RegisterSensorException {
         try {
             if (VERSION100.equals(getConnectionParameter().getVersion())) {
-                 return ((SOSServiceV100) getService()).registerSensor(rs);
+                return ((SOSServiceV100) getService()).registerSensor(rs);
             } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-                 return ((SOSServiceV200) getService()).insertSensor(rs);
+                return ((SOSServiceV200) getService()).insertSensor(rs);
             }
         } catch (final ExceptionReport e) {
             RegisterSensorException regSenEx = new RegisterSensorException(e);
             String sID = regSenEx.checkReport(rs, getService());
             if (sID == null) {
-                LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+                LOG.error(
+                        String.format("Exception thrown: %s", e.getMessage()),
+                        e);
             }
             return sID;
         }
