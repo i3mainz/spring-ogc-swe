@@ -100,48 +100,12 @@ public class SOSTemplate extends SOSAccessor implements
     public String registerSensor(final Sensor rs) {
         try {
             if (VERSION100.equals(getConnectionParameter().getVersion())) {
-                ((SOSServiceV100) getService()).registerSensor(rs);
+                return ((SOSServiceV100) getService()).registerSensor(rs);
             } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-                ((SOSServiceV200) getService()).insertSensor(rs);
+                return ((SOSServiceV200) getService()).insertSensor(rs);
             }
         } catch (final ExceptionReport e) {
-            // Handle already registered sensor case here (happens when the
-            // sensor is registered but not listed in the capabilities):
-            final Iterator<OWSException> iter = e.getExceptionsIterator();
-            while (iter.hasNext()) {
-                final OWSException owsEx = iter.next();
-                if (owsEx.getExceptionCode().equals(
-                        OwsExceptionCode.NoApplicableCode.name())
-                        && owsEx.getExceptionTexts() != null
-                        && owsEx.getExceptionTexts().length > 0) {
-                    for (final String string : owsEx.getExceptionTexts()) {
-                        if (string
-                                .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_START) > -1
-                                && string
-                                        .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                            return rs.getId();
-                        }
-                    }
-                } else if (owsEx.getExceptionCode().equals(
-                        OwsExceptionCode.InvalidParameterValue.name())
-                        && "offeringIdentifier".equals(owsEx.getLocator())
-                        && owsEx.getExceptionTexts() != null
-                        && owsEx.getExceptionTexts().length > 0) {
-                    // handle offering already contained case here
-                    for (final String string : owsEx.getExceptionTexts()) {
-                        if (string
-                                .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
-                                && string
-                                        .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                            ((SOSServiceV200) getService()).getOfferings().put(
-                                    rs.getId(), rs.getOffering().getId());
-                            return rs.getId();
-                        }
-                    }
-                }
-
-            }
-            LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+            return handleExceptionReportException(e, rs);
         }
         return null;
     }
