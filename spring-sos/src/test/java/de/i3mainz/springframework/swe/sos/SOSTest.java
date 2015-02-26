@@ -15,8 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.sun.org.apache.bcel.internal.generic.ISTORE;
-
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -61,7 +59,6 @@ public class SOSTest {
     @Test
     public void testInsertObservation() throws Exception {
         LOGGER.debug(service.insertObservation(sensor, foi, observation));
-
     }
 
     @Test
