@@ -67,6 +67,7 @@ public class SOSTemplate extends SOSAccessor implements
                     getConnectionParameter().getUrl()));
             return false;
         }
+        boolean transactional = false;
         final OperationsMetadata opMeta = getService().getCapabilities()
                 .getOperationsMetadata();
         LOG.debug(String.format("OperationsMetadata found: %s", opMeta));
@@ -77,7 +78,7 @@ public class SOSTemplate extends SOSAccessor implements
                         "Found all required operations: %s, %s",
                         SOSAdapter.REGISTER_SENSOR,
                         SOSAdapter.INSERT_OBSERVATION));
-                return true;
+                transactional = true;
             }
         } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
             if (opMeta.getOperationByName(SOSAdapter.INSERT_SENSOR) != null
@@ -86,13 +87,13 @@ public class SOSTemplate extends SOSAccessor implements
                         .format("Found all required operations: %s, %s",
                                 SOSAdapter.INSERT_SENSOR,
                                 SOSAdapter.INSERT_OBSERVATION));
-                return true;
+                transactional = true;
             }
-        }else{
+        } else {
             LOG.error(String.format("SOS-Version not '%s' not available",
                     getConnectionParameter().getVersion()));
         }
-        return false;
+        return transactional;
     }
 
     @Override
