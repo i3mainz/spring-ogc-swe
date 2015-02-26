@@ -24,17 +24,13 @@ public interface SensorObservationServiceOperations extends
 
     String registerSensor(Sensor sensor);
 
-    // public abstract String registerSensor(RegisterSensor rs);
-    //
-    // public abstract String insertObservation(InsertObservation io)
-    // throws IOException;
     String insertObservation(String sensorId, FeatureOfInterest foi,
             Observation observation) throws IOException;
 
-    OXFFeatureCollection getFeatureOfInterest(String foiID) throws OXFException,
-            ExceptionReport;
+    OXFFeatureCollection getFeatureOfInterest(String foiID)
+            throws OXFException, ExceptionReport;
 
-    OXFFeatureCollection getObservation(String offeringID, List<String> sensors,
-            List<String> observedProperties, String srsName) throws OXFException,
-            ExceptionReport;
+    OXFFeatureCollection getObservation(String offeringID,
+            List<String> sensors, List<String> observedProperties,
+            String srsName) throws OXFException, ExceptionReport;
 }

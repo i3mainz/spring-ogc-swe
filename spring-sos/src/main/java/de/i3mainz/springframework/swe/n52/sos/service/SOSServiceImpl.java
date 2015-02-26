@@ -183,6 +183,84 @@ public abstract class SOSServiceImpl implements SOSService {
     // }
     // return null;
     // }
+    
+//    protected org.n52.oxf.sos.request.InsertObservationParameters createParameterAssemblyFromIO(
+//            final String sensorID, final FeatureOfInterest foi,
+//            final Observation observation) throws OXFException {
+//
+//        LOG.trace("createParameterBuilderFromIO()");
+//        ObservationParameters obsParameter = null;
+//
+//        // if (io.getMeasuredValueType().equals(
+//        // Configuration.SOS_OBSERVATION_TYPE_TEXT)) {
+//        // set text
+//        obsParameter = new TextObservationParameters();
+//        ((TextObservationParameters) obsParameter)
+//                .addObservationValue(observation.getValue().toString());
+//        // } else if (io.getMeasuredValueType().equals(
+//        // Configuration.SOS_OBSERVATION_TYPE_COUNT)) {
+//        // // set count
+//        // obsParameter = new CountObservationParameters();
+//        // ((CountObservationParameters) obsParameter)
+//        // .addObservationValue((Integer) io.getResultValue());
+//        // } else if (io.getMeasuredValueType().equals(
+//        // Configuration.SOS_OBSERVATION_TYPE_BOOLEAN)) {
+//        // // set boolean
+//        // obsParameter = new BooleanObservationParameters();
+//        // ((BooleanObservationParameters) obsParameter)
+//        // .addObservationValue((Boolean) io.getResultValue());
+//        // } else {
+//        // // set default value type
+//        // obsParameter = new MeasurementObservationParameters();
+//        // ((MeasurementObservationParameters) obsParameter).addUom(io
+//        // .getUnitOfMeasurementCode());
+//        // ((MeasurementObservationParameters) obsParameter)
+//        // .addObservationValue(io.getResultValue().toString());
+//        // }
+//        // obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
+//        obsParameter.addNewFoiId(foi.getId());
+//        obsParameter.addNewFoiName(foi.getName());
+//        obsParameter.addFoiDescription(foi.getId());
+//        // position
+//        // boolean eastingFirst = false;
+//        // if (Configuration.EPSG_EASTING_FIRST_MAP.get(io.getEpsgCode()) ==
+//        // null) {
+//        // Configuration.EPSG_EASTING_FIRST_MAP.get("default");
+//        // } else {
+//        // eastingFirst = Configuration.EPSG_EASTING_FIRST_MAP.get(io
+//        // .getEpsgCode());
+//        // }
+//        // String pos = eastingFirst ? String.format("%s %s",
+//        // io.getLongitudeValue(), io.getLatitudeValue()) : String.format(
+//        // "%s %s", io.getLatitudeValue(), io.getLongitudeValue());
+//        // if (io.isSetAltitudeValue()) {
+//        // pos = String.format("% %", pos, io.getAltitudeValue());
+//        // }
+//
+//        String pos = foi.getPosition();
+//        obsParameter.addFoiPosition(pos);
+//        // obsParameter.addObservedProperty("urn:ogc:def:dataType:OGC:1.1:string");
+//        obsParameter.addProcedure(sensorID);
+//
+//        if (VERSION200.equalsIgnoreCase(getConnectionParameter().getVersion())) {
+//            obsParameter.addSrsPosition(Configuration.SOS_200_EPSG_CODE_PREFIX
+//                    + "4326");
+//            obsParameter.addPhenomenonTime(observation.getTimeAsSTring());
+//            obsParameter.addResultTime(observation.getTimeAsSTring());
+//            return new org.n52.oxf.sos.request.v200.InsertObservationParameters(
+//                    obsParameter, Collections.singletonList(sensorID));
+//        }
+//
+//        // obsParameter.addSrsPosition(Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
+//        // obsParameter.addParameterValue("srsName",
+//        // Configuration.SOS_100_EPSG_CODE_PREFIX+"4326");
+//        // obsParameter.addSamplingTime(observation.getTimeAsSTring());
+//        obsParameter.addParameterValue(
+//                ISOSRequestBuilder.INSERT_OBSERVATION_SAMPLING_TIME,
+//                observation.getTimeAsSTring());
+//        return new org.n52.oxf.sos.request.v100.InsertObservationParameters(
+//                obsParameter);
+//    }
 
     /**
      * @return the log

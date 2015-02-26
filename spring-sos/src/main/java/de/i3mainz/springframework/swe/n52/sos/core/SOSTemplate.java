@@ -2,16 +2,14 @@ package de.i3mainz.springframework.swe.n52.sos.core;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.n52.oxf.OXFException;
 import org.n52.oxf.adapter.OperationResult;
 import org.n52.oxf.feature.FeatureStore;
 import org.n52.oxf.feature.OXFFeatureCollection;
 import org.n52.oxf.ows.ExceptionReport;
-import org.n52.oxf.ows.OWSException;
-import org.n52.oxf.ows.OwsExceptionCode;
 import org.n52.oxf.ows.ServiceDescriptor;
 import org.n52.oxf.ows.capabilities.OperationsMetadata;
 import org.n52.oxf.sos.adapter.SOSAdapter;
@@ -23,7 +21,6 @@ import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
 import de.i3mainz.springframework.swe.n52.sos.service.versions.v100.SOSServiceV100;
 import de.i3mainz.springframework.swe.n52.sos.service.versions.v200.SOSServiceV200;
-import de.i3mainz.springframework.swe.n52.sos.util.Configuration;
 
 public class SOSTemplate extends SOSAccessor implements
         SensorObservationServiceOperations {
@@ -86,8 +83,7 @@ public class SOSTemplate extends SOSAccessor implements
 
     @Override
     public <T> String registerSensor(T sensorDescription, Collection<T> mapper) {
-        // TODO Not implemented yet
-        return null;
+        throw new NotImplementedException("Derzeit nicht implementiert");
     }
 
     /*

@@ -93,13 +93,6 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements
                 getObservationTypeURIs(rs));
     }
 
-    // /**
-    // * @return the sensorDescBuilder
-    // */
-    // protected final DescriptionBuilder getSensorDescBuilder() {
-    // return sensorDescBuilder;
-    // }
-
     private String getURIForObservationType(final String measuredValueType) {
         if ("NUMERIC".equals(measuredValueType)) {
             return "http://www.opengis.net/def/observationType/OGC-OM/2.0/OM_Measurement";
