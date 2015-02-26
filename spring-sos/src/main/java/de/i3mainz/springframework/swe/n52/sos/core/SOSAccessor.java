@@ -58,65 +58,6 @@ public abstract class SOSAccessor extends OWSAccessor {
         return service;
     }
 
-    protected String handleExceptionReportException(ExceptionReport e, Sensor rs) {
-        // Handle already registered sensor case here (happens when the
-        // sensor is registered but not listed in the capabilities):
-        String sID = null;
-        final Iterator<OWSException> iter = e.getExceptionsIterator();
-        while (iter.hasNext()) {
-            final OWSException owsEx = iter.next();
-            if (owsEx.getExceptionCode().equals(
-                    OwsExceptionCode.NoApplicableCode.name())
-                    && hasTextElements(owsEx)) {
-                sID = handleNotApplicableCode(owsEx, rs);
-            } else if (owsEx.getExceptionCode().equals(
-                    OwsExceptionCode.InvalidParameterValue.name())
-                    && "offeringIdentifier".equals(owsEx.getLocator())
-                    && hasTextElements(owsEx)) {
-                sID = handleOfferingExists(owsEx, rs);
-            }
-            if (sID != null) {
-                return sID;
-            }
-        }
-        if (sID == null) {
-            LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
-        }
-        return sID;
-    }
-
-    private boolean hasTextElements(OWSException owsEx) {
-        return owsEx.getExceptionTexts() != null
-                && owsEx.getExceptionTexts().length > 0;
-    }
-
-    private String handleNotApplicableCode(OWSException owsEx, Sensor rs) {
-        for (final String string : owsEx.getExceptionTexts()) {
-            if (string
-                    .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_START) > -1
-                    && string
-                            .indexOf(Configuration.SOS_SENSOR_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                return rs.getId();
-            }
-        }
-        return null;
-    }
-
-    private String handleOfferingExists(OWSException owsEx, Sensor rs) {
-        // handle offering already contained case here
-        for (final String string : owsEx.getExceptionTexts()) {
-            if (string
-                    .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_START) > -1
-                    && string
-                            .indexOf(Configuration.SOS_200_OFFERING_ALREADY_REGISTERED_MESSAGE_END) > -1) {
-                ((SOSServiceV200) getService()).getOfferings().put(rs.getId(),
-                        rs.getOffering().getId());
-                return rs.getId();
-            }
-        }
-        return null;
-    }
-
     public void afterPropertiesSet() throws Exception {
     }
 

@@ -5,6 +5,7 @@ import java.util.List;
 
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.RegisterSensorException;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -17,7 +18,7 @@ public interface SOSService {
 
     boolean isSOSTransactional();
 
-    String insertSensor(Sensor sensor);
+    String insertSensor(Sensor sensor) throws RegisterSensorException;
 
     String insertObservation(Sensor sensor, FeatureOfInterest foi,
             Observation observation) throws IOException;

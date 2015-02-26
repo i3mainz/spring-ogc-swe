@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.RegisterSensorException;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -95,7 +96,7 @@ public class SOSTemplate extends SOSAccessor implements
      * SensorObservationServiceOperations
      */
     @Override
-    public String registerSensor(final Sensor rs) {
+    public String registerSensor(final Sensor rs) throws RegisterSensorException {
         try {
             if (VERSION100.equals(getConnectionParameter().getVersion())) {
                  return ((SOSServiceV100) getService()).registerSensor(rs);
@@ -103,7 +104,12 @@ public class SOSTemplate extends SOSAccessor implements
                  return ((SOSServiceV200) getService()).insertSensor(rs);
             }
         } catch (final ExceptionReport e) {
-            return handleExceptionReportException(e, rs);
+            RegisterSensorException regSenEx = new RegisterSensorException(e);
+            String sID = regSenEx.checkReport(rs, getService());
+            if (sID == null) {
+                LOG.error(String.format("Exception thrown: %s", e.getMessage()), e);
+            }
+            return sID;
         }
         return null;
     }

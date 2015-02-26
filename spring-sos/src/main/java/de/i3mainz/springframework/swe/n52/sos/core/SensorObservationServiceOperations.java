@@ -9,6 +9,7 @@ import org.n52.oxf.feature.OXFFeatureCollection;
 import de.i3mainz.springframework.ogc.core.OWSServiceOperations;
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.RegisterSensorException;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -22,7 +23,7 @@ public interface SensorObservationServiceOperations extends
 
     <T> String registerSensor(T o, Collection<T> mapper);
 
-    String registerSensor(Sensor sensor);
+    String registerSensor(Sensor sensor) throws RegisterSensorException;
 
     String insertObservation(String sensorId, FeatureOfInterest foi,
             Observation observation) throws IOException;

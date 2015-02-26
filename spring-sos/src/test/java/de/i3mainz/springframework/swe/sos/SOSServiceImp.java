@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import de.i3mainz.springframework.swe.n52.sos.core.SensorObservationServiceOperations;
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetFOIServiceException;
 import de.i3mainz.springframework.swe.n52.sos.exceptions.GetObservationException;
+import de.i3mainz.springframework.swe.n52.sos.exceptions.RegisterSensorException;
 import de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest;
 import de.i3mainz.springframework.swe.n52.sos.model.Observation;
 import de.i3mainz.springframework.swe.n52.sos.model.Sensor;
@@ -90,7 +91,7 @@ public class SOSServiceImp implements SOSService {
     // }
 
     @Override
-    public String insertSensor(Sensor sensor) {
+    public String insertSensor(Sensor sensor) throws RegisterSensorException {
         return sos.registerSensor(sensor);
     }
 
