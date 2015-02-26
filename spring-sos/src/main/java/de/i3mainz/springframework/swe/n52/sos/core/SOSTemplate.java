@@ -164,7 +164,7 @@ public class SOSTemplate extends SOSAccessor implements
             String srsName) throws OXFException, ExceptionReport {
         OperationResult result = getService().getObservation(offering, sensors,
                 observedProperties, srsName);
-        LOG.debug(("Sended request: \n" + result.getSendedRequest()));
+        LOG.debug("Sended request: \n" + result.getSendedRequest());
         SOSObservationStore store = new SOSObservationStore(result);
         return store.unmarshalFeatures();
     }
