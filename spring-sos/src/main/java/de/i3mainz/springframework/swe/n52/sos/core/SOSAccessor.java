@@ -39,7 +39,7 @@ public abstract class SOSAccessor extends OWSAccessor {
         } else {
             throw new NotImplementedException("Version "
                     + getConnectionParameter().getVersion()
-                    + "not supported by SOS-Services");
+                    + " not supported by SOS-Services");
         }
     }
 

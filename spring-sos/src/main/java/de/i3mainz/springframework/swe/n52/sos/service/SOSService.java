@@ -19,6 +19,7 @@ import de.i3mainz.springframework.swe.n52.sos.model.Observation;
  */
 public interface SOSService {
     ServiceDescriptor getCapabilities();
+    boolean isTransactional();
 
     String insertObservation(String sensorId, FeatureOfInterest foi,
             Observation observation);

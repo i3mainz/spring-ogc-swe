@@ -13,7 +13,9 @@ import org.apache.xmlbeans.XmlException;
 import org.n52.oxf.OXFException;
 import org.n52.oxf.adapter.OperationResult;
 import org.n52.oxf.ows.ExceptionReport;
+import org.n52.oxf.ows.capabilities.OperationsMetadata;
 import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
+import org.n52.oxf.sos.adapter.SOSAdapter;
 import org.n52.oxf.sos.adapter.wrapper.builder.GetFeatureOfInterestParameterBuilder_v100;
 import org.n52.oxf.sos.adapter.wrapper.builder.GetObservationParameterBuilder_v100;
 import org.n52.oxf.sos.adapter.wrapper.builder.ObservationTemplateBuilder;
@@ -122,6 +124,22 @@ public class SOSServiceV100Impl extends SOSServiceImpl implements
         return new RegisterSensorParameters(
                 this.sensorDescBuilder.createSML(registerSensor),
                 observationTemplate.generateObservationTemplate());
+    }
+
+    @Override
+    public boolean isTransactional() {
+        final OperationsMetadata opMeta = getCapabilities()
+                .getOperationsMetadata();
+        LOG.debug(String.format("OperationsMetadata found: %s", opMeta));
+        if (opMeta.getOperationByName(SOSAdapter.REGISTER_SENSOR) != null
+                && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
+            LOG.debug(String.format(
+                    "Found all required operations: %s, %s",
+                    SOSAdapter.REGISTER_SENSOR,
+                    SOSAdapter.INSERT_OBSERVATION));
+            return true;
+        }
+        return false;
     }
 
 }

@@ -16,7 +16,9 @@ import org.apache.xmlbeans.XmlException;
 import org.n52.oxf.OXFException;
 import org.n52.oxf.adapter.OperationResult;
 import org.n52.oxf.ows.ExceptionReport;
+import org.n52.oxf.ows.capabilities.OperationsMetadata;
 import org.n52.oxf.sos.adapter.ISOSRequestBuilder;
+import org.n52.oxf.sos.adapter.SOSAdapter;
 import org.n52.oxf.sos.request.v200.InsertSensorParameters;
 import org.slf4j.Logger;
 
@@ -150,6 +152,22 @@ public class SOSServiceV200Impl extends SOSServiceImpl implements
     @Override
     public Map<String, String> getOfferings() {
         return this.offerings;
+    }
+
+    @Override
+    public boolean isTransactional() {
+        final OperationsMetadata opMeta = getCapabilities()
+                .getOperationsMetadata();
+        LOG.debug(String.format("OperationsMetadata found: %s", opMeta));
+        if (opMeta.getOperationByName(SOSAdapter.INSERT_SENSOR) != null
+                && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
+            LOG.debug(String
+                    .format("Found all required operations: %s, %s",
+                            SOSAdapter.INSERT_SENSOR,
+                            SOSAdapter.INSERT_OBSERVATION));
+            return true;
+        }
+        return false;
     }
 
 }

@@ -11,8 +11,6 @@ import org.n52.oxf.feature.FeatureStore;
 import org.n52.oxf.feature.OXFFeatureCollection;
 import org.n52.oxf.ows.ExceptionReport;
 import org.n52.oxf.ows.ServiceDescriptor;
-import org.n52.oxf.ows.capabilities.OperationsMetadata;
-import org.n52.oxf.sos.adapter.SOSAdapter;
 import org.n52.oxf.sos.feature.SOSObservationStore;
 import org.slf4j.Logger;
 
@@ -67,33 +65,7 @@ public class SOSTemplate extends SOSAccessor implements
                     getConnectionParameter().getUrl()));
             return false;
         }
-        boolean transactional = false;
-        final OperationsMetadata opMeta = getService().getCapabilities()
-                .getOperationsMetadata();
-        LOG.debug(String.format("OperationsMetadata found: %s", opMeta));
-        if (VERSION100.equals(getConnectionParameter().getVersion())) {
-            if (opMeta.getOperationByName(SOSAdapter.REGISTER_SENSOR) != null
-                    && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
-                LOG.debug(String.format(
-                        "Found all required operations: %s, %s",
-                        SOSAdapter.REGISTER_SENSOR,
-                        SOSAdapter.INSERT_OBSERVATION));
-                transactional = true;
-            }
-        } else if (VERSION200.equals(getConnectionParameter().getVersion())) {
-            if (opMeta.getOperationByName(SOSAdapter.INSERT_SENSOR) != null
-                    && opMeta.getOperationByName(SOSAdapter.INSERT_OBSERVATION) != null) {
-                LOG.debug(String
-                        .format("Found all required operations: %s, %s",
-                                SOSAdapter.INSERT_SENSOR,
-                                SOSAdapter.INSERT_OBSERVATION));
-                transactional = true;
-            }
-        } else {
-            LOG.error(String.format("SOS-Version not '%s' not available",
-                    getConnectionParameter().getVersion()));
-        }
-        return transactional;
+        return getService().isTransactional();
     }
 
     @Override

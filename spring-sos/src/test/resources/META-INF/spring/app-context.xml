@@ -20,7 +20,7 @@
 		<property value="http://10.153.101.11:8180/52nSOSv3.5.0/sos"
 			name="url">
 		</property>
-		<property name="version" value="1.0.0"></property>
+		<property name="version" value="3.0.0"></property>
 		<property name="binding" value="SOAP"></property>
 	</bean>
 	<bean id="connectionParameterSOS20"
