@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-ogc-sos="http://www.springframework.org/schema/integration/ogc/sos"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/ogc/sos http://www.springframework.org/schema/integration/ogc/sos/spring-integration-ogc-sos-1.0.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<int:channel id="input" />
+	<int:channel id="sensorCreationChannel" />
+	<int:channel id="splitterChannel" />
+	<int:channel id="sensorinput" />
+	<int:channel id="transformChannel" />
+
+	<int:splitter input-channel="sensorCreationChannel"
+		output-channel="splitterChannel" />
+
+	<int:transformer input-channel="splitterChannel" ref="transformer"
+		output-channel="transformChannel" />
+
+	<int:filter input-channel="transformChannel" output-channel="sensorinput">
+		<bean
+			class="de.i3mainz.springframework.integration.swe.sos.filter.ObservationFilter" />
+	</int:filter>
+
+	<bean id="sosConnection"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="${url}" name="url" />
+		<property name="version" value="${serviceversion}" />
+		<property name="binding" value="${binding}" />
+	</bean>
+
+	<bean id="transformer"
+		class="de.i3mainz.springframework.integration.swe.sos.transformation.ObservationTransformer">
+		<constructor-arg name="foiCreator">
+			<bean
+				class="de.i3mainz.springframework.integration.swe.sos.transformation.util.FOICreator">
+				<property name="evaluator" ref="sosExpressionEvaluator" />
+				<property name="spatialFieldExpression" value="${spatialField}" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="observationCreator">
+			<bean
+				class="de.i3mainz.springframework.integration.swe.sos.transformation.util.ObservationCreator">
+				<property name="evaluator" ref="sosExpressionEvaluator" />
+				<property name="temporalFieldExpression" value="${timeField}" />
+				<property name="valueExpression" value="${value}" />
+			</bean>
+		</constructor-arg>
+	</bean>
+
+	<bean id="sosExpressionEvaluator"
+		class="de.i3mainz.springframework.integration.swe.sos.transformation.util.SOSExpressionEvaluator">
+		<property name="conversionService">
+			<bean
+				class="de.i3mainz.springframework.integration.expressions.ExtendableConversionService">
+				<constructor-arg name="converters">
+					<list>
+						<bean
+							class="org.springframework.integration.json.ToStringFriendlyJsonNodeToStringConverter">
+						</bean>
+					</list>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+	<beans profile="use-staticCreation">
+		<int:bridge input-channel="input" output-channel="sensorCreationChannel" />
+		<bean id="sensor"
+			class="de.i3mainz.springframework.swe.n52.sos.util.RegisterSensorFactory">
+			<constructor-arg name="io">
+				<bean
+					class="de.i3mainz.springframework.swe.n52.sos.model.ObservationSensorInformationImpl">
+					<constructor-arg name="sensor">
+						<bean id="sensor"
+							class="de.i3mainz.springframework.swe.n52.sos.model.Sensor">
+							<constructor-arg type="java.lang.String" value="${sensorID}"
+								name="uri" />
+							<constructor-arg type="java.lang.String" value="${sensorName}"
+								name="name" />
+							<constructor-arg
+								type="de.i3mainz.springframework.swe.n52.sos.model.Offering"
+								name="offering">
+								<bean class="de.i3mainz.springframework.swe.n52.sos.model.Offering">
+									<constructor-arg type="java.lang.String" value="${offeringID}"
+										name="uri">
+									</constructor-arg>
+									<constructor-arg type="java.lang.String" value="${offeringName}"
+										name="name">
+									</constructor-arg>
+								</bean>
+							</constructor-arg>
+						</bean>
+					</constructor-arg>
+					<constructor-arg name="foi">
+						<bean
+							class="de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest">
+							<constructor-arg name="uri" value="${systemFoiUri}" />
+							<constructor-arg name="name" value="${systemFoiName}" />
+							<constructor-arg name="position" value="${systemFoiPosition}" />
+							<constructor-arg name="srid" value="${systemFoiSRID}" />
+						</bean>
+					</constructor-arg>
+				</bean>
+			</constructor-arg>
+			<constructor-arg name="propertiesInfos"
+				value="${registerSensorPropertiesInformation}" />
+		</bean>
+
+		<bean id="sosInitializer"
+			class="de.i3mainz.springframework.swe.n52.sos.init.SOSInitializer">
+			<property name="parameter" ref="sosConnection"></property>
+			<property name="enabled" value="${initSensor}"></property>
+			<property name="initializer" ref="insertSensorPopulator"></property>
+		</bean>
+
+		<bean id="insertSensorPopulator"
+			class="de.i3mainz.springframework.xd.swe.sos.InsertSensorSOSInitializer">
+			<property name="sensor" ref="sensor"></property>
+		</bean>
+
+		<int-ogc-sos:transactional-outbound-channel-adapter
+			id="sosOut" sos-connection="sosConnection" operation="INSERTOBSERVATION"
+			channel="sensorinput" sensor="${sensorID}"
+			propertyInformation="${insertObservationSensorPropertyInformation}" />
+
+	</beans>
+	<beans profile="use-dynamicCreation">
+		<int:channel id="sensCreationC" />
+		<int:channel id="routingKeyChannel3" />
+		<int:channel id="routingKeyEnricherChannel" />
+		<int:channel id="insertObservationFactoryHeaderEnricherChannel" />
+		<int:header-enricher input-channel="input"
+			output-channel="insertObservationFactoryHeaderEnricherChannel">
+			<int:header name="INSERTOBSERVATIONFACTORY" method="enrich">
+				<bean
+					class="de.i3mainz.springframework.integration.swe.sos.transformation.InsertObservationFactoryHeaderEnricher">
+					<constructor-arg name="sensorC" ref="sensorCreator" />
+					<property name="evaluator" ref="sosExpressionEvaluator" />
+				</bean>
+			</int:header>
+		</int:header-enricher>
+		<int:router id="routingKeyExistsRouter"
+			input-channel="insertObservationFactoryHeaderEnricherChannel"
+			expression="headers[${registerSensorPropertiesInformationKey}]!=null ? 'routingKeyChannel' : 'routingKeyEnricherChannel'" />
+
+		<int:header-enricher
+			id="registerSensorPropertiesInformationHeaderEnricher" input-channel="routingKeyEnricherChannel"
+			output-channel="routingKeyChannel">
+			<int:header name="${registerSensorPropertiesInformationKey}"
+				method="enrich">
+				<bean
+					class="de.i3mainz.springframework.integration.swe.sos.transformation.SensorPropertiesHeaderEnricher">
+					<property name="evaluator" ref="sosExpressionEvaluator" />
+					<property name="propertyExpression" value="${propertyField}" />
+					<property name="uomExpression" value="${uomField}"></property>
+				</bean>
+			</int:header>
+		</int:header-enricher>
+
+		<int:header-enricher id="registerSensorHeaderEnricher"
+			input-channel="routingKeyChannel" output-channel="sensCreationC">
+			<int:header name="REGISTERSENSOR" method="enrich"
+				ref="registerSensorHeaderEnricherBean" />
+		</int:header-enricher>
+		<bean id="registerSensorHeaderEnricherBean"
+			class="de.i3mainz.springframework.integration.swe.sos.transformation.RegisterSensorHeaderEnricher">
+			<constructor-arg name="sensorC" ref="sensorCreator" />
+			<property name="foiC">
+				<bean
+					class="de.i3mainz.springframework.integration.swe.sos.transformation.util.FOICreator">
+					<property name="evaluator" ref="sosExpressionEvaluator" />
+					<property name="foiIDExpression" value="${systemFoiUri}" />
+					<property name="foiNameExpression" value="${systemFoiName}" />
+					<property name="spatialFieldExpression" value="${systemFoiPosition}" />
+				</bean>
+			</property>
+		</bean>
+		<bean id="sensorCreator"
+			class="de.i3mainz.springframework.integration.swe.sos.transformation.util.SensorCreator">
+			<property name="evaluator" ref="sosExpressionEvaluator" />
+			<property name="sensorURIExpression" value="${sensorID}" />
+			<property name="sensorNameExpression" value="${sensorName}" />
+			<property name="offeringURIExpression" value="${offeringID}" />
+			<property name="offeringNameExpression" value="${offeringName}" />
+		</bean>
+		<int-ogc-sos:transactional-outbound-gateway
+			id="registerSensorOutboundGateway" request-channel="sensCreationC"
+			sos-connection="sosConnection" operation="INSERTSENSOR"
+			reply-channel="sensorCreationChannel" expression="headers['REGISTERSENSOR']" />
+
+		<int-ogc-sos:transactional-outbound-channel-adapter
+			id="sosOut" sos-connection="sosConnection" operation="INSERTOBSERVATION"
+			channel="sensorinput" iOF-expression="headers['INSERTOBSERVATIONFACTORY']" />
+	</beans>
+</beans>

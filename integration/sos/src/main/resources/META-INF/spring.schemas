@@ -1,0 +1,2 @@
+http\://www.springframework.org/schema/integration/ogc/sos/spring-integration-ogc-sos-1.0.xsd=org/springframework/integration/config/xml/spring-integration-ogc-sos-1.0.xsd
+http\://www.springframework.org/schema/integration/ogc/sos/spring-integration-ogc-sos.xsd=org/springframework/integration/config/xml/spring-integration-ogc-sos-1.0.xsd

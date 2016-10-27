@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-ogc-sos="http://www.springframework.org/schema/integration/ogc/sos"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/ogc/sos http://www.springframework.org/schema/integration/ogc/sos/spring-integration-ogc-sos.xsd">
+	<bean id="connection"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="http://172.16.191.133:8080/sos"
+			name="url" />
+		<property name="version" value="1.0.0" />
+		<property name="binding" value="SOAP" />
+	</bean>
+
+	<int:channel id="out" />
+
+	<int-ogc-sos:inbound-channel-adapter
+		id="sosadapterInboundChannelAdapter" auto-startup="true"
+		sos-connection="connection" channel="out" operation="GETOBSERVATION">
+		<int:poller fixed-rate="5000" />
+	</int-ogc-sos:inbound-channel-adapter>
+
+</beans>

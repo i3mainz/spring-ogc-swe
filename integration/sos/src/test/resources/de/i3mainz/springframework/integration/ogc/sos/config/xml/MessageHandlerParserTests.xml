@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-ogc-sos="http://www.springframework.org/schema/integration/ogc/sos"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/ogc/sos http://www.springframework.org/schema/integration/ogc/sos/spring-integration-ogc-sos.xsd">
+
+
+	<bean id="connection"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="http://172.16.191.133:8080/sos"
+			name="url" />
+		<property name="version" value="1.0.0" />
+		<property name="binding" value="SOAP" />
+	</bean>
+	<int:channel id="target" />
+
+	<int-ogc-sos:transactional-outbound-channel-adapter
+		id="sosadapterOutboundChannelAdapter" sos-connection="connection"
+		operation="INSERTOBSERVATION" auto-startup="true" order="1" channel="target"
+		foi-ref="foi" sensor="Test3000"
+		propertyInformation="{'name':'text', 'uri':'urn:ogc:def:dataType:OGC:1.1:string','mvt': 'TEXT', 'uom':'mg/m³'}">
+	</int-ogc-sos:transactional-outbound-channel-adapter>
+
+	<!-- <bean id="ioF" -->
+	<!-- class="de.i3mainz.springframework.swe.n52.sos.util.InsertObservationFactory"> -->
+	<!-- <constructor-arg name="sensorID" value="Test3000" /> -->
+	<!-- <constructor-arg name="propertyInfo"> -->
+	<!-- <value>{"name":"text", "uri": "urn:ogc:def:dataType:OGC:1.1:string", -->
+	<!-- "mvt": "TEXT", "uom": "mg/m³"} -->
+	<!-- </value> -->
+	<!-- </constructor-arg> -->
+	<!-- </bean> -->
+
+	<bean id="foi"
+		class="de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest">
+		<constructor-arg name="uri" value="foi_Mainz_1" />
+		<constructor-arg name="name" value="Mainz 1" />
+		<constructor-arg name="position" value="POINT(49.99984232 8.23548545)" />
+		<constructor-arg name="srid" value="4326" />
+	</bean>
+</beans>

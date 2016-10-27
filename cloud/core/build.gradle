@@ -1,0 +1,23 @@
+dependencies {
+    compile project(':spring-integration-sos')
+    compile "org.geotools:gt-geojson:${geotoolsVersion}"
+}
+
+test {
+    systemProperties 'property': 'value'
+}
+
+task copyLibs(type: Copy) {
+		outputs.dir project.file('lib/')
+        from configurations.runtime
+        into project.file('lib/')
+}
+
+
+['test','build', 'eclipse', 'idea'].each {t -> tasks[t].dependsOn copyLibs}
+
+task cleanLibs(type: Delete) {
+        delete copyLibs.outputs
+}
+
+['clean', 'cleanEclipse', 'cleanIdea'].each {t -> tasks[t].dependsOn cleanLibs}

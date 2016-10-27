@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns="http://www.springframework.org/schema/integration/ogc/sos"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:tool="http://www.springframework.org/schema/tool"
+	xmlns:integration="http://www.springframework.org/schema/integration"
+	targetNamespace="http://www.springframework.org/schema/integration/ogc/sos"
+	elementFormDefault="qualified" attributeFormDefault="unqualified">
+
+	<xsd:import namespace="http://www.springframework.org/schema/beans" />
+	<xsd:import namespace="http://www.springframework.org/schema/tool" />
+	<xsd:import namespace="http://www.springframework.org/schema/integration"
+		schemaLocation="http://www.springframework.org/schema/integration/spring-integration.xsd" />
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			Defines the configuration elements for the Spring Integration
+			SOSAdapter Adapter.
+		]]></xsd:documentation>
+	</xsd:annotation>
+
+	<xsd:element name="inbound-channel-adapter">
+		<xsd:annotation>
+			<xsd:documentation>
+				The definition for the Spring Integration
+				OGC Core
+				Operations Inbound Channel Adapter. The Adapter allows Core
+				Operations of SOS Standard (GetCapabilities, DescribeSensor and
+				GetObservation)
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="integration:poller" minOccurs="0"
+					maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attributeGroup ref="coreSOSAdapterComponentAttributes" />
+			<xsd:attribute name="operation" use="required">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The operation which will be requested.
+				 ]]></xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:union memberTypes="coreOperations xsd:string" />
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="channel" type="xsd:string">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type
+								type="org.springframework.integration.core.MessageChannel" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="send-timeout" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+						Allows you to specify how long this inbound-channel-adapter
+						will wait for the message (containing the retrieved entities)
+						to be sent successfully to the message channel, before throwing
+						an exception.
+
+						Keep in mind that when sending to a DirectChannel, the
+						invocation will occur in the sender's thread so the failing
+						of the send operation may be caused by other components
+						further downstream. By default the Inbound Channel Adapter
+						will wait indefinitely. The value is specified in milliseconds.
+					]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="outbound-gateway">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines the Spring Integration OGC SOS
+				Core
+				Operations Outbound Gateway
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="integration:poller" minOccurs="0"
+					maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attributeGroup ref="coreSOSAdapterComponentAttributes" />
+			<xsd:attribute name="operation" use="required">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The operation which will be requested.
+				 ]]></xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:union memberTypes="coreOperations xsd:string" />
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="request-channel" type="xsd:string"
+				use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+						The receiving Message Channel of this endpoint.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type
+								type="org.springframework.integration.core.MessageChannel" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="reply-channel" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Message Channel to which replies should be
+						sent,
+						after receiving the database response.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type
+								type="org.springframework.integration.core.MessageChannel" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="reply-timeout" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+						Allows you to specify how long this gateway will wait for
+						the reply message to be sent successfully before throwing
+						an exception. Keep in mind that when sending to a
+						DirectChannel, the invocation will occur in the sender's thread
+						so the failing of the send operation may be caused by other
+						components further downstream. By default the Gateway will
+						wait indefinitely. The value is specified in milliseconds.
+						]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="order">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the order for invocation when this
+						endpoint is connected as a
+						subscriber to a SubscribableChannel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="transactional-outbound-channel-adapter">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines an outbound Channel Adapter.
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="integration:poller" minOccurs="0"
+					maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attributeGroup ref="coreSOSAdapterComponentAttributes" />
+			<xsd:attributeGroup ref="insertObservationComponentAttributes" />
+			<xsd:attribute name="expression" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						SpEL Expression resolving to a FeatureOfInterest
+						or Observation
+						based on the message.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="operation" use="required">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The operation which will be requested.
+				 ]]></xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:union memberTypes="transactionalOperations xsd:string" />
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="channel" type="xsd:string">
+				<xsd:annotation>
+					<xsd:appinfo>
+						<xsd:documentation>
+							Channel from which messages will be output.
+							When a message is sent to this channel it will
+							cause the query
+							to
+							be executed.
+						</xsd:documentation>
+						<tool:annotation kind="ref">
+							<tool:expected-type
+								type="org.springframework.integration.MessageChannel" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="order">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the order for invocation when this
+						endpoint is connected as a
+						subscriber to a SubscribableChannel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+
+	<xsd:element name="transactional-outbound-gateway">
+		<xsd:annotation>
+			<xsd:documentation>
+				Defines the Spring Integration SOSAdapter
+				RegisterSensor Outbound
+				Gateway
+			</xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="integration:poller" minOccurs="0"
+					maxOccurs="1" />
+			</xsd:sequence>
+			<xsd:attributeGroup ref="coreSOSAdapterComponentAttributes" />
+			<xsd:attributeGroup ref="insertObservationComponentAttributes" />
+			<xsd:attribute name="expression" type="xsd:string" use="optional">
+				<xsd:annotation>
+					<xsd:documentation>
+						SpEL Expression resolving to a RegisterSensor
+						or
+						Observation object based on the message.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="operation" use="required">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+					The operation which will be requested.
+				 ]]></xsd:documentation>
+				</xsd:annotation>
+				<xsd:simpleType>
+					<xsd:union memberTypes="transactionalOperations xsd:string" />
+				</xsd:simpleType>
+			</xsd:attribute>
+			<xsd:attribute name="request-channel" type="xsd:string"
+				use="required">
+				<xsd:annotation>
+					<xsd:documentation>
+						The receiving Message Channel of this endpoint.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type
+								type="org.springframework.integration.core.MessageChannel" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="reply-channel" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation>
+						Message Channel to which replies should be
+						sent,
+						after receiving the database response.
+					</xsd:documentation>
+					<xsd:appinfo>
+						<tool:annotation kind="ref">
+							<tool:expected-type
+								type="org.springframework.integration.core.MessageChannel" />
+						</tool:annotation>
+					</xsd:appinfo>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="reply-timeout" type="xsd:string">
+				<xsd:annotation>
+					<xsd:documentation><![CDATA[
+						Allows you to specify how long this gateway will wait for
+						the reply message to be sent successfully before throwing
+						an exception. Keep in mind that when sending to a
+						DirectChannel, the invocation will occur in the sender's thread
+						so the failing of the send operation may be caused by other
+						components further downstream. By default the Gateway will
+						wait indefinitely. The value is specified in milliseconds.
+						]]>
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+			<xsd:attribute name="order">
+				<xsd:annotation>
+					<xsd:documentation>
+						Specifies the order for invocation when this
+						endpoint is connected as a
+						subscriber to a SubscribableChannel.
+					</xsd:documentation>
+				</xsd:annotation>
+			</xsd:attribute>
+		</xsd:complexType>
+	</xsd:element>
+	<xsd:attributeGroup name="insertObservationComponentAttributes">
+		<xsd:attribute name="foi-ref" use="optional" type="xsd:string">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<tool:annotation kind="ref">
+						<tool:expected-type
+							type="de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest" />
+					</tool:annotation>
+				</xsd:appinfo>
+				<xsd:documentation>
+					Reference to the FOI.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="foi-expression" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					SpEL Expression resolving to a FeatureOfInterest
+					based on the message.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="insertObservationFactory" use="optional"
+			type="xsd:string">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<tool:annotation kind="ref">
+						<tool:expected-type
+							type="de.i3mainz.springframework.swe.n52.sos.util.InsertObservationFactory" />
+					</tool:annotation>
+				</xsd:appinfo>
+				<xsd:documentation>
+					Reference to the InsertObservationFactory.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="iOF-expression" type="xsd:string"
+			use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					SpEL Expression resolving to a
+					InsertObservationFactory based on the message.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="sensor" use="optional" type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					SOS Sensor ID where to store Observation.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="propertyInformation" use="optional"
+			type="xsd:string">
+			<xsd:annotation>
+				<xsd:documentation>
+					Property Information for InsertObservation
+					request.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<xsd:attributeGroup name="coreSOSAdapterComponentAttributes">
+		<xsd:attribute name="id" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Identifies the underlying Spring bean definition,
+					which is an
+					instance of either 'EventDrivenConsumer' or
+					'PollingConsumer',
+					depending on whether the component's input
+					channel is a
+					'SubscribableChannel' or 'PollableChannel'.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="auto-startup" default="true" use="optional">
+			<xsd:annotation>
+				<xsd:documentation>
+					Flag to indicate that the component should start
+					automatically
+					on startup (default true).
+				</xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:union memberTypes="xsd:boolean xsd:string" />
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="sos-connection" use="required"
+			type="xsd:string">
+			<xsd:annotation>
+				<xsd:appinfo>
+					<tool:annotation kind="ref">
+						<tool:expected-type
+							type="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter" />
+					</tool:annotation>
+				</xsd:appinfo>
+				<xsd:documentation>
+					Reference to the SOS Connection Parameter.
+					Generates Template for SOS.
+				</xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:attributeGroup>
+
+	<xsd:simpleType name="coreOperations">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="GETCAPABILITIES" />
+			<xsd:enumeration value="DESCRIBESENSOR" />
+			<xsd:enumeration value="GETOBSERVATION" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:simpleType name="transactionalOperations">
+		<xsd:restriction base="xsd:token">
+			<xsd:enumeration value="INSERTSENSOR" />
+			<xsd:enumeration value="INSERTOBSERVATION" />
+		</xsd:restriction>
+	</xsd:simpleType>
+
+</xsd:schema>

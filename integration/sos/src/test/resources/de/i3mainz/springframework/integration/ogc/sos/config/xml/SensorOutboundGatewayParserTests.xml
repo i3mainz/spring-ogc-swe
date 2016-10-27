@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-ogc-sos="http://www.springframework.org/schema/integration/ogc/sos"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/ogc/sos http://www.springframework.org/schema/integration/ogc/sos/spring-integration-ogc-sos.xsd">
+
+	<bean id="connection"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="http://172.16.191.133:8080/sos"
+			name="url" />
+		<property name="version" value="1.0.0" />
+		<property name="binding" value="SOAP" />
+	</bean>
+
+	<int:channel id="in" />
+	<int:channel id="out" />
+
+	<int-ogc-sos:transactional-outbound-gateway
+		id="sosadapterSensorOutboundGateway" sos-connection="connection"
+		operation="INSERTSENSOR" auto-startup="true" order="1"
+		request-channel="in" reply-channel="out" reply-timeout="100" />
+
+	<int-ogc-sos:transactional-outbound-gateway
+		id="sosadapterSensorOutboundGateway2" sos-connection="connection"
+		operation="INSERTSENSOR" auto-startup="true" order="1"
+		request-channel="in" reply-channel="out" reply-timeout="100"
+		expression="headers.REGISTERSENSOR" />
+
+	<bean id="testsensor" class="de.i3mainz.springframework.swe.n52.sos.model.Sensor">
+		<constructor-arg name="name" value="Test 4000" />
+		<constructor-arg name="uri" value="Test4000" />
+		<constructor-arg name="offeringURI" value="Twitter_Sentiment" />
+		<constructor-arg name="offeringName" value="Twitter Sentiment Analyse" />
+	</bean>
+
+	<bean id="registerSensor"
+		class="de.i3mainz.springframework.swe.n52.sos.util.RegisterSensorFactory">
+		<constructor-arg name="io">
+			<bean
+				class="de.i3mainz.springframework.swe.n52.sos.model.ObservationSensorInformationImpl">
+				<constructor-arg name="sensor" ref="testsensor" />
+				<constructor-arg name="foi" ref="testFOI" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="propertiesInfos">
+			<value>[{"name":"text", "uri": "urn:ogc:def:dataType:OGC:1.1:string",
+				"mvt": "TEXT", "uom": "mg/m³"}]
+			</value>
+		</constructor-arg>
+	</bean>
+
+	<bean id="testFOI"
+		class="de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest">
+		<constructor-arg name="uri" value="foi_Mainz_1" />
+		<constructor-arg name="name" value="Mainz 1" />
+		<constructor-arg name="position" value="POINT(49.99984232 8.23548545)" />
+		<constructor-arg name="srid" value="4326" />
+	</bean>
+
+</beans>

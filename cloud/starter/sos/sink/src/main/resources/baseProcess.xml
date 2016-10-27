@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.2.xsd">
+	<bean id="sosExpressionEvaluator"
+		class="de.i3mainz.springframework.integration.swe.sos.transformation.util.SOSExpressionEvaluator">
+		<property name="conversionService">
+			<bean
+				class="de.i3mainz.springframework.integration.expressions.ExtendableConversionService">
+				<constructor-arg name="converters">
+					<list>
+						<bean
+							class="org.springframework.integration.json.ToStringFriendlyJsonNodeToStringConverter">
+						</bean>
+					</list>
+				</constructor-arg>
+			</bean>
+		</property>
+	</bean>
+
+</beans>

@@ -1,0 +1,6 @@
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
+    compile ("org.projectlombok:lombok:${lombokVersion}")
+    compile "org.springframework.integration:spring-integration-core:${springIntegrationVersion}"
+    compile project(':spring-integration-sos')
+}

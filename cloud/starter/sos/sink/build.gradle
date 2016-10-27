@@ -1,0 +1,40 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        mavenLocal()
+    }
+    dependencies {
+ 		classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'   
+    }
+}
+
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-maven'
+apply plugin: 'propdeps-idea'
+apply plugin: 'propdeps-eclipse'
+apply plugin: 'org.unbroken-dome.test-sets'
+apply plugin: 'io.spring.dependency-management'
+
+group = 'org.springframework.cloud.stream.app'
+
+project.testSets { integTest }
+
+dependencies {
+    compile project (':spring-cloud-ogc-core')
+    compile project (':spring-boot-starter-sos')
+    compile('org.springframework.integration:spring-integration-java-dsl')
+    compile('org.springframework.cloud.stream.app:app-starters-annotation-common')
+    compile("org.projectlombok:lombok:${lombokVersion}")
+    optional('org.springframework.boot:spring-boot-configuration-processor')
+    integTestCompile('org.springframework.cloud:spring-cloud-stream-test-support')
+}
+
+dependencyManagement {
+	imports { 
+		mavenBom "org.springframework.cloud:spring-cloud-starter-parent:${springCloudVersion}"
+		mavenBom "org.springframework.cloud.stream.app:spring-cloud-stream-app-dependencies:${springCloudStreamVersion}"
+	}
+}

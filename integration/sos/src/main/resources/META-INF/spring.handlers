@@ -1,0 +1,1 @@
+http\://www.springframework.org/schema/integration/ogc/sos=de.i3mainz.springframework.integration.ogc.sos.config.xml.OGCSOSNamespaceHandler

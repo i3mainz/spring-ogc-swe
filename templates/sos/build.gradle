@@ -1,0 +1,46 @@
+apply plugin: 'org.unbroken-dome.test-sets'
+
+description = 'Spring OGC SOS'
+
+group = 'de.i3mainz.springframework.ogc.swe'
+
+testSets {
+    integTest
+}
+
+integTest{
+    testLogging{ showStandardStreams = true }
+}
+
+dependencies {
+	compile project(":spring-templates-ogc-core")
+	compile ("org.n52.sensorweb:oxf-sos-adapter:$oxfVersion"){
+        exclude group: 'org.mockito', module: 'mockito-all'
+    }
+    compile "org.springframework.integration:spring-integration-core:${springIntegrationVersion}"
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.5.4'
+	testCompile "junit:junit:$junitVersion"
+	testCompile "org.springframework:spring-test:$springVersion"
+	
+}
+
+task sourcesJar(type: Jar, dependsOn:classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn:javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+eclipse {
+	project {
+		natures += 'org.springframework.ide.eclipse.core.springnature'
+	}
+}

@@ -1,0 +1,4 @@
+# Tooling related information for the integration OGC SOS Adapter namespace
+http\://www.springframework.org/schema/integration/ogc/sos@name=Integration OGC SOS Adapter Namespace
+http\://www.springframework.org/schema/integration/ogc/sos@prefix=int-ogc-sos
+http\://www.springframework.org/schema/integration/ogc/sos@icon=org/springframework/integration/config/xml/spring-integration-ogc-sos.gif

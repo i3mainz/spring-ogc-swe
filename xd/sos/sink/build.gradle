@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        maven { url "http://repo.spring.io/plugins-snapshot" }
+        maven { url "http://repo.spring.io/release" }
+        jcenter()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        mavenLocal()
+    }
+    dependencies {
+        classpath ('de.i3mainz:spring-xd-gradle-plugin:1.0.0-SNAPSHOT')
+    }
+}
+
+apply plugin: 'de.i3mainz.spring-xd-module'
+
+mainClassName = ''
+
+springxd{
+    moduleName = "ogc-sos"
+    moduleType = "sink"
+}
+
+dependencies{
+	compile project(':spring-cloud-ogc-core')
+	provided project(':spring-integration-sos')
+	provided "org.geotools:gt-geojson:$geotoolsVersion"
+}
+
+eclipse {
+        project {
+                natures += 'org.springframework.ide.eclipse.core.springnature'
+        }
+}
+
+/*task copyLibs(type: Copy) {
+		outputs.dir project.file('lib/')
+        from configurations.runtime
+        into project.file('lib/')
+}
+
+
+['test','build', 'eclipse', 'idea'].each {t -> tasks[t].dependsOn copyLibs}
+
+task cleanLibs(type: Delete) {
+        delete copyLibs.outputs
+}
+
+['clean', 'cleanEclipse', 'cleanIdea'].each {t -> tasks[t].dependsOn cleanLibs}
+*/

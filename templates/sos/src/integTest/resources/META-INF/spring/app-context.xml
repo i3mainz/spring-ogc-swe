@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<description>Example configuration to get you started.</description>
+
+	<bean class="de.i3mainz.springframework.swe.n52.sos.core.SOSTemplate"
+		id="sos">
+		<property name="connectionParameter" ref="connectionParameterSOS20" />
+	</bean>
+
+	<context:component-scan base-package="de.i3mainz.springframework.swe" />
+
+	<bean id="connectionParameterSOS"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="http://localhost:8282/sos"
+			name="url">
+		</property>
+		<property name="version" value="1.0.0"></property>
+		<property name="binding" value="POX"></property>
+	</bean>
+	<bean id="connectionParameterSOS20"
+		class="de.i3mainz.springframework.swe.n52.sos.SOSConnectionParameter">
+		<property value="http://localhost:8282/service"
+			name="url">
+		</property>
+		<property name="version" value="2.0.0"></property>
+		<property name="binding" value="POX"></property>
+	</bean>
+	<bean id="testsensor" class="de.i3mainz.springframework.swe.n52.sos.model.Sensor">
+		<constructor-arg name="name" value="Test 3000" />
+		<constructor-arg name="uri" value="Test3000" />
+		<constructor-arg name="offeringURI" value="Twitter_Sentiment" />
+		<constructor-arg name="offeringName" value="Twitter Sentiment Analyse" />
+	</bean>
+	<bean id="registerSensor"
+		class="de.i3mainz.springframework.swe.n52.sos.util.RegisterSensorFactory">
+		<constructor-arg name="io">
+			<bean
+				class="de.i3mainz.springframework.swe.n52.sos.model.ObservationSensorInformationImpl">
+				<constructor-arg name="sensor" ref="testsensor" />
+				<constructor-arg name="foi" ref="testFOI" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="propertiesInfos">
+			<value>[{"name":"text", "uri": "urn:ogc:def:dataType:OGC:1.1:string",
+				"mvt": "TEXT", "uom": "mg/m³"}]
+			</value>
+		</constructor-arg>
+	</bean>
+
+
+
+	<bean id="testFOI"
+		class="de.i3mainz.springframework.swe.n52.sos.model.FeatureOfInterest">
+		<constructor-arg name="uri" value="foi_Mainz_1" />
+		<constructor-arg name="name" value="Mainz 1" />
+		<constructor-arg name="position" value="POINT(49.99984232 8.23548545)" />
+		<constructor-arg name="srid" value="4326" />
+	</bean>
+
+	<bean id="dateFormat" class="java.text.SimpleDateFormat">
+		<constructor-arg value="yyyy-MM-dd'T'HH:mm:ssZ" />
+	</bean>
+
+	<util:list id="observedProperties" value-type="java.lang.String">
+		<value>urn:ogc:def:dataType:OGC:1.1:string</value>
+	</util:list>
+
+	<util:list id="sensors" value-type="java.lang.String">
+		<value>biebertweets</value>
+	</util:list>
+
+	<bean id="testobservation"
+		class="de.i3mainz.springframework.swe.n52.sos.model.Observation">
+		<constructor-arg name="time">
+			<!-- <bean factory-bean="dateFormat" factory-method="parse"> -->
+			<!-- <constructor-arg> -->
+			<bean class="java.util.Date" />
+			<!-- </constructor-arg> -->
+			<!-- </bean> -->
+		</constructor-arg>
+		<constructor-arg name="value" value="TESTOBSERVATION08152" />
+	</bean>
+
+	<bean id="ioF"
+		class="de.i3mainz.springframework.swe.n52.sos.util.InsertObservationFactory">
+		<constructor-arg name="sensor" ref="testsensor" />
+		<constructor-arg name="propertyInfo">
+			<value>{"name":"text", "uri": "urn:ogc:def:dataType:OGC:1.1:string",
+				"mvt": "TEXT", "uom": "mg/m³"}
+			</value>
+		</constructor-arg>
+	</bean>
+</beans>
