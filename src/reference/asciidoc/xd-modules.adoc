@@ -1,0 +1,6 @@
+[[spring-xd-ogc-modules-section]]
+= Spring XD OGC Modules
+
+This section introduces the Spring XD Modules for OGC Services, like Sensor Observation Service (SOS).
+
+include::./chapter/xd-modules/spring-xd-sos-sink-module.adoc[]

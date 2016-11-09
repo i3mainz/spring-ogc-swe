@@ -1,0 +1,4 @@
+[[spring-integration-section]]
+= Spring Integration Adapter
+
+include::./chapter/integration-adapter/spring-integration-sos.adoc[]

@@ -1,0 +1,4 @@
+[[ogc-integration-sos-section]]
+== Spring Integration SOS Adapter
+
+This section provides information on the Spring Integration SOS Adapter.

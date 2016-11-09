@@ -1,0 +1,17 @@
+include ":spring-template-sos"
+include ":spring-integration-sos"
+include ":spring-boot-starter-sos"
+include ":spring-cloud-ogc-core"
+include ":spring-cloud-starter-stream-sink-sos"
+include ":sos-sink-kafka"
+include ":sos-sink-rabbit"
+include ":spring-xd-sos-sink"
+
+project(':spring-template-sos').projectDir = new File(settingsDir, 'templates/sos')
+project(':spring-integration-sos').projectDir = new File(settingsDir, 'integration/sos')
+project(':spring-boot-starter-sos').projectDir = new File(settingsDir, 'boot/starter/sos')
+project(':spring-cloud-ogc-core').projectDir = new File(settingsDir, 'cloud/core')
+project(':spring-cloud-starter-stream-sink-sos').projectDir = new File(settingsDir, 'cloud/starter/sos/sink')
+project(':sos-sink-kafka').projectDir = new File(settingsDir, 'cloud/apps/kafka/sos/sink')
+project(':sos-sink-rabbit').projectDir = new File(settingsDir, 'cloud/apps/rabbit/sos/sink')
+project(':spring-xd-sos-sink').projectDir = new File(settingsDir, 'xd/sos/sink')

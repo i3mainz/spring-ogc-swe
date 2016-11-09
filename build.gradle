@@ -1,0 +1,104 @@
+buildscript {
+	repositories {
+		maven { url 'http://repo.springsource.org/plugins-release' }
+	}
+	dependencies {
+		classpath 'io.spring.gradle:docbook-reference-plugin:0.3.1'
+	}
+}
+
+plugins {
+  id "org.sonarqube" version "2.2-rc2"
+  id "org.asciidoctor.gradle.asciidoctor" version "1.5.1"
+  id "io.spring.dependency-management" version "0.6.0.RELEASE" apply false
+  id "org.unbroken-dome.test-sets" version "1.2.0" apply false
+}
+
+apply plugin: 'base'
+
+group = group
+version = version
+
+def docsDir = 'src/reference/asciidoc' // Will be default with newer asciidoctor plugin
+
+def javaProjects() { 
+  return subprojects.findAll { new File(it.projectDir, "src").exists() }
+} 
+
+configure(javaProjects()) {
+    apply plugin: 'eclipse'
+    apply plugin: 'idea'
+    apply plugin: 'java'
+    apply from: "${rootProject.projectDir}/maven.gradle"
+    
+    sourceCompatibility = 1.8
+	targetCompatibility = 1.8
+
+    repositories {
+        maven { url 'http://download.osgeo.org/webdav/geotools/' }    
+        if (version.endsWith('BUILD-SNAPSHOT') || project.hasProperty('platformVersion')) {
+			maven { url 'http://repo.spring.io/libs-snapshot' }
+		}   
+        maven { url "http://repo.spring.io/release" }
+        jcenter()
+        maven { url "http://repo.spring.io/snapshot" }
+        maven { url "http://repo.spring.io/milestone" }
+        maven { url 'http://repo.boundlessgeo.com/main' }       
+        mavenCentral()
+        maven { url 'http://maven.geo-solutions.it' }
+        mavenLocal()
+        //maven { url 'https://mvnrepo.i3mainz.hs-mainz.de/artifactory/libs-snapshot/' }
+    }
+    
+    group = 'de.i3mainz.ogc'
+    version = version
+    
+    jar { manifest.attributes provider: 'i3mainz' }
+    
+    eclipse {
+    classpath {
+        containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+        containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8'
+    }
+}
+    
+}
+
+apply plugin: 'docbook-reference'
+
+asciidoctor {
+	sourceDir file("$docsDir")
+	sourceDocumentNames = files("$docsDir/index.adoc") // Change in >= 1.5.1
+	outputDir file("$buildDir/html")
+	backends = ['html5', 'docbook']
+	logDocuments = true
+	options = [
+		doctype: 'book',
+		attributes: [
+			docinfo: '',
+			toc2: '',
+			'compat-mode': '',
+			imagesdir: '',
+			stylesdir: "stylesheets/",
+			stylesheet: 'golo.css',
+			'spring-ogc-version': "$version",
+			'source-highlighter': 'highlightjs'
+		]
+	]
+}
+
+reference {
+	sourceFileName = 'index.xml'
+	sourceDir = file("$buildDir/html")
+	pdfFilename = 'spring-ogc-reference.pdf'
+	expandPlaceholders = ''
+}
+
+reference.dependsOn asciidoctor
+
+task wrapper(type: Wrapper) {
+    description = 'Generates gradlew[.bat] scripts'
+    gradleVersion = '3.1'
+}
+
+

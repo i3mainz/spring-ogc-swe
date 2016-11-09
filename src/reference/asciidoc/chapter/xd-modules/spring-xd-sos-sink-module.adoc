@@ -1,0 +1,2 @@
+[[spring-xd-sos-sink-module-section]]
+== Spring XD SOS Sink Module

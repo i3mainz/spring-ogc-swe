@@ -1,0 +1,4 @@
+[[whats-new]]
+== What's new in Spring XD OGC {spring-xd-ogc-version}?
+
+This chapter provides an overview of the new features and improvements that have been introduced.

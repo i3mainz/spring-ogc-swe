@@ -1,0 +1,3 @@
+[[ogc-sos-template-section]]
+== SOS Template
+

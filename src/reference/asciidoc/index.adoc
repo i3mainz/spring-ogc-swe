@@ -1,0 +1,28 @@
+[[spring-xd-ogc-reference]]
+
+= Spring XD OGC Reference Manual
+
+:toc:
+
+include::./preface.adoc[]
+[[whats-new-part]]
+= What's new?
+
+[[spring-xd-ogc-intro-new]]
+For those who are already familiar with Spring Integration, this chapter provides a brief overview of the new features of version 4.2.
+If you are interested in the changes and features, that were introduced in earlier versions, please see chapter:<<history>>
+
+include::./whats-new.adoc[]
+[[spring-xd-ogc-introduction]]
+= Overview of Spring XD OGC Implementation
+
+[[spring-xd-ogc-intro]]
+Spring XD OGC provides components to use OGC compliant services in the Spring context. This focuses on usage on http://projects.spring.io/spring-integration[Spring Integration] and http://projects.spring.io/spring-xd[Spring XD].
+
+include::./overview.adoc[]
+
+include::./ogc-template.adoc[]
+
+include::./integration-adapter.adoc[]
+
+include::./xd-modules.adoc[]

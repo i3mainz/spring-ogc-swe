@@ -1,0 +1,7 @@
+[[ogc-template-section]]
+= Spring OGC Template
+
+This section introduces the Spring OGC Template. The template provides basic functionality on handling with OGC Services, like WMS or SOS.
+
+
+include::./chapter/template/ogc-sos-template.adoc[]
