@@ -13,8 +13,6 @@ integTest{
 }
 
 dependencies {
-	//compile project(":spring-templates-ogc-core")
-	compile ("de.i3mainz.springframework.ogc:spring-templates-ogc-core:1.0.0.BUILD-SNAPSHOT")
 	compile ("org.n52.sensorweb:oxf-sos-adapter:$oxfVersion"){
         exclude group: 'org.mockito', module: 'mockito-all'
     }
