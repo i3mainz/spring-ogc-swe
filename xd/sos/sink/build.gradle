@@ -6,6 +6,10 @@ buildscript {
         maven { url "http://repo.spring.io/snapshot" }
         maven { url "http://repo.spring.io/milestone" }
         mavenLocal()
+        maven { 
+        	name 'plugins-snapshots' 
+        	url 'https://mvnrepo.i3mainz.hs-mainz.de/artifactory/plugins-snapshot' 
+        }
     }
     dependencies {
         classpath ('de.i3mainz:spring-xd-gradle-plugin:1.0.0-SNAPSHOT')
